@@ -1,0 +1,5 @@
+{
+  "name": "node-gotapi-plugin-simpleclock",
+  "version": "0.0.1",
+  "main": "./index.js"
+}

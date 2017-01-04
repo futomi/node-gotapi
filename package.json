@@ -1,0 +1,40 @@
+{
+  "name": "node-gotapi",
+  "version": "0.0.8",
+  "description": "The node-gotapi is a Node.js implementation of the Generic Open Terminal API Framework (GotAPI) developed by the Open Mobile Alliance (OMA).",
+  "main": "./start-gotapi.js",
+  "files": [
+    "lib",
+    "html-default",
+    "imgs",
+    "plugins-default",
+    "config-default.js",
+    "start-gotapi-debug.js",
+    "start-gotapi.js"
+  ],
+  "directories": {
+    "lib": "./lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "GotAPI",
+    "OMA",
+    "Generic Open Terminal API Framework",
+    "Open Mobile Alliance"
+  ],
+  "homepage": "https://github.com/futomi",
+  "author": "Futomi Hatano <futomi.hatano@gmail.com> (https://github.com/futomi)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/futomi/node-gotapi.git"
+  },
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "fs-extra": ">=1.0.0",
+    "pem": ">=1.9.4",
+    "websocket.io": ">=0.2.1"
+  }
+}

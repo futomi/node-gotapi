@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Hello World - node-gotapi</title>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<!-- jsrender -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/0.9.83/jsrender.min.js"></script>
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<!-- style -->
+<link href="style.css" rel="stylesheet">
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse navbar-fixed-top">
+	<div class="container">
+		<div class="navbar-header">
+			<h1><a class="navbar-brand" href="https://github.com/futomi/node-gotapi" target="_blank">Hello World - node-gotapi</a></h1>
+		</div>
+	</div>
+</nav>
+
+<div class="container theme-showcase" role="main" id="main-wrapper">
+	<div class="row">
+		<div class="col-md-12">
+			<section class="panel panel-default">
+				<div class="panel-heading">
+					<h2 class="panel-title">Response</h2>
+				</div>
+				<div class="panel-body">
+					<p id="res"></p>
+				</div>
+			</section>
+		</div>
+	</div>
+
+	<section class="panel panel-primary" id="comm-monitor-box">
+		<div class="panel-heading">
+			<h2 class="panel-title">Communication monitor</h2>
+		</div>
+		<div class="panel-body">
+			<dl id="comm-monitor"></dl>
+		</div>
+	</section>
+</div>
+
+<footer class="footer">
+	<div class="container">
+		<p class="text-muted">Copyright &copy; 2017 Futomi Hatano, Code licensed MIT</p>
+	</div>
+</footer>
+
+<script id="comm-tmpl" type="text/x-jsrender">
+	<dt>{{:dir}} GotAPI-{{:if}} Interface</dt>
+	<dd>
+	{{if url}}<pre>{{:method}} {{:url}}</pre>{{/if}}
+	{{if body}}<pre>{{:body}}</pre>{{/if}}
+	</dd>
+</script>
+
+<!-- gotapi-client.js -->
+<script src="/gotapi-client.js"></script>
+<script src="/gotapi-monitor.js"></script>
+
+<script>
+'use strict';
+
+let gotapi = new GotapiClient();
+var monitor = (new GotapiMonitor(gotapi)).init();
+
+gotapi.connect().then((services) => {
+	return gotapi.request({
+		method    : 'get',
+		serviceId : 'com.github.futomi.hello-world.echo',
+		profile   : 'echo',
+		attribute : '',
+		msg       : 'hello!'
+	});
+}).then((res) => {
+	document.querySelector('#res').textContent = res['data'];
+}).catch((error) => {
+	document.querySelector('#res').textContent = error.message;
+});
+
+</script>
+
+</body>
+</html>
