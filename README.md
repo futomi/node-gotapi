@@ -44,7 +44,10 @@ The OMA GotAPI specification is standardized mainly for smartphones (Android, iO
 * [Node.js](https://nodejs.org/en/) 6 +
 * [fs-extra](https://www.npmjs.com/package/fs-extra) 1.0.0 +
 * [pem](https://www.npmjs.com/package/pem) 1.9.4 +
-* [websocket.io](https://www.npmjs.com/package/websocket.io) 0.1.1
+* [websocket.io](https://www.npmjs.com/package/websocket.io) 0.1.1 +
+* [node-onvif](https://www.npmjs.com/package/node-onvif) 0.0.5 + (optional)
+
+An sample application packaged in the `node-gotapi` requires the `node-onvif`. If you don't need to try a sample application using the `node-onvif`, you don't need to install the `node-onvif`. But an error message will be shown when the `node-onvif` is started. Though the error does not harm the `node-gotapi`, you can avoid that deleting the `node-gotapi-plugin-onvif` directory in the `plugins` directory.
 
 ### How to install
 
@@ -55,6 +58,7 @@ $ cd ~
 $ npm install fs-extra
 $ npm install pem
 $ npm install websocket.io
+$ npm install node-onvif
 $ npm install node-gotapi
 ```
 
@@ -74,7 +78,7 @@ Path                    | Description
 :-----------------------|:-----------
 `html/`                 | This directory is newly created when the `node-gotapi` is started for the first time. This directory is the document root of the web server for front-end applications. Some sample front-end applications are saved initially.
 `lib/`                  | The relevant JS libraries are saved in this directory
-`plugins/`              | The Plug-Ins are installed in this directory. Some sample Plug-Ins are saved initially.
+`plugins/`              | This directory is newly created when the `node-gotapi` is started for the first time. The `node-gotapi` adds this directory into the node.js module search path list.  The node modules whose root directory name starts with `node-gotapi-plugin-` are recognized as Plug-In for the `node-gotapi`. Some sample Plug-Ins are saved initially.
 `ssl/`                  | A self-signed certificate file and a key file for TLS/SSL are saved in this directory.
 `config.js`             | This file is newly created when the `node-gotapi` is started for the first time. This file is a configuration file.
 `start-gotapi.js`       | This script starts the `node-gotapi`.
