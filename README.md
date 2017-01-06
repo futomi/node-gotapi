@@ -30,9 +30,25 @@ The OMA GotAPI specification is standardized mainly for smartphones (Android, iO
 * [Tutorials](#Tutorials)
   * [Creating an one-shot API](#Creating-an-one-shot-API)
   * [Creating an asynchronous push API](#Creating-an-asynchronous-push-API)
-* [API References](#API-References)
-  * [API Reference for Plug-In](#API-Reference-for-Plug-In)
-  * [API Reference for Front-End Application](#API-Reference-for-Front-End-Application)
+* [API Reference for Plug-In](#API-Reference-for-Plug-In)
+  * [Files and Directories](#Files-and-Directories)
+  * [Template code of the Plug-In](#Template-code-of-the-Plug-In)
+  * [Defining the services which your Plug-In serves](#Defining-the-services-which-your-Plug-In-serves)
+  * [`this.util.init()` method](#init-method)
+  * [`this.util.onservicediscoverry` property](#onservicediscoverry-property)
+  * [`ServiceDiscoveryRequestMessage` object](#ServiceDiscoveryRequestMessage-object)
+  * [`this.util.returnServiceDiscovery()` method](#returnServiceDiscovery-method)
+  * [`this.util.onclinetid` property](#onclinetid-property)
+  * [`ClientIdRequestMessage` object](#ClientIdRequestMessage-object)
+  * [`this.util.returnClientIdRequest()` method](#returnClientIdRequest-method)
+  * [`this.util.onaccesstoken` property](#onaccesstoken-property)
+  * [`AccessTokenRequestMessage` object](#AccessTokenRequestMessage-object)
+  * [`this.util.returnAccessTokenRequest` method](#returnAccessTokenRequest-method)
+  * [`this.util.onmessage` property](#onmessage-property)
+  * [`RequestMessage` object](#RequestMessage-object)
+  * [`this.util.returnMessage()` method](#returnMessage-method)
+  * [`this.util.pushMessage()` method](#pushMessage-method)
+* [API Reference for Front-End Application](#API-Reference-for-Front-End-Application)
 * [References](#References)
 * [License](#License)
 
@@ -648,13 +664,335 @@ function clickedButton(event) {
 ```
 
 ---------------------------------------
-## <a name="API-References">API References</a>
+## <a name="API-Reference-for-Plug-In">API Reference for Plug-In</a>
 
-### <a name="API-Reference-for-Plug-In">API Reference for Plug-In</a>
+This section describes the APIs to help you to develop Plug-Ins.
 
-*work in progress*
+### <a name="Files-and-Directories">Files and Directories</a>
 
-### <a name="API-Reference-for-Front-End-Application">API Reference for Front-End Application</a>
+The Plug-In must be developed as a node module. There are some restrictions for the Plug-In:
+
+* The name of the root directory of the Plug-In (node module) must start with `node-gotapi-plugin-`. For example, you want to develop a Plug-In named `sample`, the name of the root directory must be `node-gotapi-plugin-sample`.
+* The Plug-In must be a [npm](#https://www.npmjs.com/) package. Especially, the `package.json` is important. It is recommended to read [the description of the `package.json`](https://docs.npmjs.com/files/package.json).
+
+The simplest `package.json` is as follows:
+
+```JavaScript
+{
+  "name": "node-gotapi-plugin-sample",
+  "version": "0.0.1",
+  "main": "./index.js"
+}
+```
+
+In this section, it is assumed that the `main` property of `package.json` is set to `./index.js`.
+
+The Plug-In module is detected by the `node-gotapi` under conditions as follows:
+
+* The root directory name starts with `node-gotapi-plugin-`.
+* The Plug-In module is placed in the `plugins` directory of the `node-gotapi` or in the module search path of your node environment.
+
+You can publish your Plug-In module at the npmjs.com. The `node-gotapi` detects your Plug-In module as long as the conditions described above are satisfied.
+
+### <a name="Template-code-of-the-Plug-In">Template code of the Plug-In</a>
+
+Your Plug-In must be developed based on the code below:
+
+```JavaScript
+'use strict';
+
+// Constructor
+let GotapiPlugin = function(util) {
+  this.util = util;
+  // Define the information for your Plug-In
+  this.info = {
+    name: 'The name of your Plug-In',
+    services: [...]
+    ]
+  };
+};
+
+// Basically this method don't need to be modified.
+GotapiPlugin.prototype.init = function(callback) {
+  this.util.init(this.info);
+  this.util.onmessage = this.receiveMessage.bind(this);
+  callback(this.info);
+};
+
+// This method is called when a request comes from the front-end application
+GotapiPlugin.prototype.receiveMessage = function(message) {
+  // Do something depending on the parameters as follows:
+  // - message['params']['serviceId']
+  // - message['profile`]
+  // - message['attribute']
+  // - message['method'].
+
+  // return a response
+  this.util.returnMessage(message);
+};
+
+module.exports = GotapiPlugin;
+```
+
+### <a name="Defining-the-services-which-your-Plug-In-serves">Defining the services which your Plug-In serves</a>
+
+As described the previous section, the information of your Plug-In must be defined in the constructor:
+
+```JavaScript
+let GotapiPlugin = function(util) {
+  ...
+  this.info = {
+    name: 'The name of your Plug-In',
+    services: [...]
+    ]
+  };
+};
+```
+
+The `this.info` must have the properties as follows:
+
+Property     | Type   | Required | Description
+:------------|:-------|:---------|:-----------
+`name`       | String | Required | The name of your Plug-In.
+`services`   | Array  | Required | The list of objects representing the services which your Plug-In serves.
+
+If the services could not be confirmed at the moment when the Plug-In module is initialized, the `this.info['services'] may be an empty string.
+
+```JavaScript
+this.info = {
+  name: 'Sample',
+  services: []
+};
+```
+
+In this case, you have to attach a callback to the `this.util.onservicediscoverry` property and return the available services in the callback. See the section `this.util.onservicediscoverry` for details.
+
+The object representing a service in the `this.info['services'] must have the properties as follows:
+
+Property       | Type   | Required | Description
+:--------------|:-------|:---------|:-----------
+`serviceId`    | String | Required | This property represents the identifier of the service. Though the `node-gotapi` does not restrict the naming, it should be universally unique. It is recommended to use the Java-style package name.
+`name`         | String | Required | This property represents the name of the service. It is just metadata. You can define the name as you like.
+`online`       | String | Required | This property represents the current availability. If the service is available when the Plug-In initialized, it must be `true`. Otherwise, it must be `false`.
+`scopes`       | Array  | Required | This property represents a list of profiles this module provides. It must be an `Array`.
+`manufacturer` | String | Optional | If this service represents the external device which is connected through this Plug-In, this value must be the manufacturer of the external device. Otherwise, this value must be the name of the provider or the developer of this Plug-In.
+`version`      | String | Optional | If this service represents the external device which is connected through this Plug-In, this value must be the version of the external device. Otherwise, this value must be the version of this Plug-In.
+`type`         | String | Optional | If this service represents the external device which is connected through this Plug-In, this value represents the type of the network used to connect to the external device. The value must be either "WiFi", "BLE", "NFC", "USB", or "Bluetooth". If the network type is not one of them, the value of this property must be an empty string.
+
+The object representing a service described above is sent to the front-end application as-is when the Network Service Discovery is processed. You can add some custom property. The code blow shows an example of declaration of the Plug-In information in the constructor:
+
+```JavaScript
+this.info = {
+  name: 'Home Gateway Resource Monitor',
+  services: [
+    {
+      serviceId : 'com.github.futomi.resource',
+      name      : 'CPU Monitor',
+      online    : true,
+      scopes    : ['cpu', 'mem', 'disk'],
+      version   : '1.0.0',
+      copyright : 'Copyright (c) 2017 Futomi Hatano',
+      license   : 'MIT'
+    }
+  ]
+};
+```
+In the code above, two custom properties `copyright` and `license` are added.
+
+### <a name="init-method">`this.util.init()` method</a>
+
+This method initializes the `this.util` object. This method takes the `this.info` object as an argument. This method must be called in the `GotapiPlugin.prototype.init()` method at first.
+
+```JavaScript
+GotapiPlugin.prototype.init = function(callback) {
+  this.util.init(this.info);
+  ...
+};
+```
+
+### <a name="onservicediscoverry-property">`this.util.onservicediscoverry` property</a>
+
+This property is an event handler called when the service discovery process started. If no callback function is attached to this property, the `this.info.services` property is returned to the GotAPI Server automatically. But if you want to generate the services to be returned on the fly, you can use this property. A callback function must be attach to this property in the the `GotapiPlugin.prototype.init()` method.
+
+```JavaScript
+GotapiPlugin.prototype.init = function(callback) {
+  this.util.init(this.info);
+  ...
+  this.util.onservicediscoverry = (message) => {
+    message['services'] = [...]; // Define the services on the fly
+    this.util.returnServiceDiscovery(message);
+  }
+  ...
+  callback(this.info);
+};
+```
+
+A [`ServiceDiscoveryRequestMessage`](#ServiceDiscoveryRequestMessage-object) object is passed to the callback function. In the code above, the variable `message` represents a [`ServiceDiscoveryRequestMessage`](#ServiceDiscoveryRequestMessage) object.
+
+In the callback function attached to the `this.util.onservicediscoverry` property, an Array object representing the list of the services must be set to the `services` property in the [`ServiceDiscoveryRequestMessage`](#ServiceDiscoveryRequestMessage-object) object.
+
+Lastly, the [`this.util.returnServiceDiscovery()`](#returnServiceDiscovery-method) method must be called with the [`ServiceDiscoveryRequestMessage`](#ServiceDiscoveryRequestMessage-object) object as the 1st argument.
+
+### <a name="ServiceDiscoveryRequestMessage-object">`ServiceDiscoveryRequestMessage` object</a>
+
+This object is passed to the callback function attached to the [`this.util.onservicediscoverry`](#onservicediscoverry-property) property. This object represents the request of the service discovery. This object consists of the properties as follows:
+
+Property      | Type   | Description
+:-------------|:-------|:-----------
+`package`     | String | The origin of the front-end application (e.g. "https://localhost:10443")
+`profile`     | String | `networkServiceDiscovery` 
+`attribute`   | String | `getNetworkServices`
+`receiver`    | String | The application ID of the `node-gotapi` (e.g. "com.github.futomi.node-gotapi")
+`services`    | Array  | an empty Array object
+
+### <a name="returnServiceDiscovery-method">`this.util.returnServiceDiscovery()` method</a>
+
+This method responds to the service discovery. See the previous section "[The `this.util.onservicediscoverry` property](#onservicediscoverry-property)" for details.
+
+### <a name="onclinetid-property">`this.util.onclinetid` property</a>
+
+This property is an event handler called when the request for a client ID comes from the GotAPI Server. If no callback function is attached to this property, a client ID is automatically generated and returned it to the GotAPI Server. That is, the front-end application is unconditionally accepted by default. But if you want to check if the front-end application should be accepted or not, you can use this property. A callback function must be attached to this property in the the `GotapiPlugin.prototype.init()` method.
+
+```JavaScript
+GotapiPlugin.prototype.init = function(callback) {
+  this.util.init(this.info);
+  ...
+  this.util.onclinetid = (message) => {
+    if(message['package'] !== 'https://localhost:10443') {
+      message['accept'] = false;
+      message['errorMessage'] = 'I dislike you.';
+    }
+    this.util.returnClientIdRequest(message);
+  }
+  ...
+  callback(this.info);
+};
+```
+
+A [`ClientIdRequestMessage`](#ClientIdRequestMessage-object) object is passed to the callback function. In the code above, the variable `message` represents a [`ClientIdRequestMessage`](#ClientIdRequestMessage-object) object.
+
+In the callback function attached to the `this.util.onclinetid` property, the `accept` property must be set in the [`ClientIdRequestMessage`](#ClientIdRequestMessage-object) object. By default, the value of the `accept` property is set to `true` which means the Plug-In accepts the front-end application. If you want to deny, assign `false` to the `accept` property;
+
+If you deny the request, you can also define your custom error message setting the `errorMessage` property of the [`ClientIdRequestMessage`](#ClientIdRequestMessage-object) object to your custome message.
+
+Lastly, the [`this.util.returnClientIdRequest()`](#returnClientIdRequest-method) method must be called with the [`ClientIdRequestMessage`](#ClientIdRequestMessage-object) object as the 1st argument.
+
+### <a name="ClientIdRequestMessage-object">`ClientIdRequestMessage` object</a>
+
+This object is passed to the callback function attached to the [`this.util.onclinetid`](#onclinetid-property) property. This object represents the request for a client ID. This object consists of the properties as follows:
+
+Property       | Type   | Description
+:--------------|:-------|:-----------
+`package`      | String | The origin of the front-end application (e.g. "https://localhost:10443")
+`profile`      | String | `authorization` 
+`attribute`    | String | `createClient`
+`receiver`     | String | The application ID of the `node-gotapi` (e.g. "com.github.futomi.node-gotapi")
+`accept`       | Boolean | By default, the value is `true`. If you want to deny the request, set it to `false`
+`errorMessage` | String | By default, the value is an empty string. If you want to define your custom error message, set this property to your custom message.
+
+### <a name="returnClientIdRequest-method">`this.util.returnClientIdRequest()` method</a>
+
+This method returns a response for the request for a client ID. See the previous section "[The `this.util.onclinetid` property](#onclinetid-property)" for details.
+
+### <a name="onaccesstoken-property">`this.util.onaccesstoken` property</a>
+
+This property is an event handler called when the request for an access token comes from the GotAPI Server. If no callback function is attached to this property, an access token is automatically generated and returned it to the GotAPI Server. That is, the front-end application is unconditionally accepted by default.
+
+The OMA GotAPI 1.1 specification defines the access token request for authorization of the scope which is a list of profiles the front-end application want to use. But the `node-gotapi` does not support the scope authorization for Plug-Ins as of now. Therefore, this property is practically as same as the `onclinetid` property.
+
+But if you want to check if the front-end application should be accepted or not, you can use this property. A callback function must be attached to this property in the the `GotapiPlugin.prototype.init()` method.
+
+```JavaScript
+GotapiPlugin.prototype.init = function(callback) {
+  this.util.init(this.info);
+  ...
+  this.util.onaccesstoken = (message) => {
+    if(message['package'] !== 'https://localhost:10443') {
+      message['accept'] = false;
+      message['errorMessage'] = 'I dislike you.';
+    }
+    this.util.returnAccessTokenRequest(message);
+  }
+  ...
+  callback(this.info);
+};
+```
+
+A [`AccessTokenRequestMessage`](#AccessTokenRequestMessage-object) object is passed to the callback function. In the code above, the variable `message` represents a [`AccessTokenRequestMessage`](#AccessTokenRequestMessage-object) object.
+
+In the callback function assigned to the `this.util.onaccesstoken` property, the `accept` property must be set in the [`AccessTokenRequestMessage`](#AccessTokenRequestMessage-object) object. By default, the value of the `accept` property is set to `true` which means the Plug-In accepts the front-end application. If you want to deny, assign `false` to the `accept` property.
+
+If you deny the request, you can also define your custom error message setting the `errorMessage` property of the [`AccessTokenRequestMessage`](#AccessTokenRequestMessage-object) object to your custom message.
+
+Lastly, the [`this.util.returnAccessTokenRequest()`](#returnAccessTokenRequest-method) method must be called with the [`AccessTokenRequestMessage`](#AccessTokenRequestMessage-object) object as the 1st argument.
+
+### <a name="AccessTokenRequestMessage-object">`AccessTokenRequestMessage` object</a>
+
+This object is passed to the callback function attached to the [`this.util.onaccesstoken`](#onaccesstoken-property) property. This object represents the request for an access token. This object consists of the properties as follows:
+
+Property       | Type   | Description
+:--------------|:-------|:-----------
+`package`      | String | The origin of the front-end application (e.g. "https://localhost:10443")
+`profile`      | String | `authorization` 
+`attribute`    | String | `createClient`
+`receiver`     | String | The application ID of the `node-gotapi` (e.g. "com.github.futomi.node-gotapi")
+`clientId`     | String | The client ID assigned to the front-end application.
+`accept`       | Boolean | By default, the value is `true`. If you want to deny the request, set it to `false`
+`errorMessage` | String | By default, the value is an empty string. If you want deny the request and define your custom error message, set this property to your custom message.
+
+### <a name="returnAccessTokenRequest-method">`this.util.returnAccessTokenRequest` method</a>
+
+This method returns a response for the request for a access token. See the previous section "The [`this.util.onaccesstoken`](#onaccesstoken-property) property" for details.
+
+### <a name="onmessage-property">`this.util.onmessage` property</a>
+
+This property is an event handler called when a message comes from the front-end application through the GotAPI-1 Interface and the GotAPI Server. A callback function must be attached to this property in the the `GotapiPlugin.prototype.init()` method.
+
+```JavaScript
+GotapiPlugin.prototype.init = function(callback) {
+  this.util.init(this.info);
+  ...
+  this.util.onmessage = (message) => {
+    ...
+    message['data'] = 'something';
+    this.util.returnMessage(message);
+  };
+  ...
+  callback(this.info);
+};
+```
+
+A [`RequestMessage`](#RequestMessage-object) object is passed to the callback function. In the code above, the variable `message` represents a [`RequestMessage`](#RequestMessage-object) object. The `RequestMessage` object represents a request message coming from the front-end application through the GotAPI Server. See the section "[The `RequestMessage` object](#RequestMessage-object)" for details.
+
+In this callback function, the `data` property must be added in the [`RequestMessage`](#RequestMessage-object) object, then the [`this.util.returnMessage()`](#returnMessage-method) method must be called with the [`RequestMessage`](#RequestMessage-object) object.
+
+### <a name="RequestMessage-object">`RequestMessage` object</a>
+
+This object is passed to the callback function attached to the [`this.util.onmessage`](#onmessage-property) property. This object represents a request message coming from the front-end application. The object consists of the properties as follows:
+
+Property      |             | Type   | Description
+:-------------|:------------|:-------|:-----------
+`params`      |             | Object | The parameters which the front-end application sent in the request to the GotAPI-1 message.
+              | `serviceId` | String | The service ID
+              | (any)       | String | If the front-end application sent any other parameters, the parameters are stored in the `params` property.
+`package`     |             | String | The origin of the front-end application (e.g. "https://localhost:10443")
+`profile`     |             | String | The profile name
+`attribute`   |             | String | The attribute name
+`method`      |             | String | The HTTP method used when the front end application sent the request to the GotAPI-1 Interface. The value is either `get`, `post`, `put`, or `delete`.
+`clientId`    |             | String | The client ID assigned to the front end application.
+`accessToken` |             | String | The access token assigned to the front end application.
+`receiver`    |             | String | The application ID of the `node-gotapi` (e.g. "com.github.futomi.node-gotapi")
+
+### <a name="returnMessage-method">`this.util.returnMessage()` method</a>
+
+This method returns a response to the front-end application through the GotAPI Server and GotAPI-1 Interface. See the section "[Creating an one-shot API](#Creating-an-one-shot-API)" for details.
+
+### <a name="pushMessage-method">`this.util.pushMessage()` method</a>
+
+This method push a notification to the front-end application through the GotAPI Server. Unlike the [`this.util.returnMessage()`](#returnMessage-method), the notification sent by this method is transfered to the front-end application through the GotAPI-5 Interface. See the section "[Creating an asynchronous push API](#Creating-an-asynchronous-push-API)" for details.
+
+---------------------------------------
+## <a name="API-Reference-for-Front-End-Application">API Reference for Front-End Application</a>
 
 *work in progress*
 
