@@ -3,7 +3,7 @@
 *
 * Copyright (c) 2017, Futomi Hatano, All rights reserved.
 * Released under the MIT license
-* Date: 2017-01-03
+* Date: 2017-01-07
 * ---------------------------------------------------------------- */
 'use strict';
 
@@ -139,8 +139,14 @@ GotapiClient.prototype._httpRequest = function(method, url) {
 			}
 			if(xhr.status >= 200 && xhr.status < 300) {
 				resolve(o);
-			} else if(o && o.errorMessage) {
-				reject(new Error(xhr.status + ' ' + xhr.statusText + ' (' + o.errorMessage + ')'));
+			} else if(o && o.result !== 0) {
+				let e = new Error(xhr.status + ' ' + xhr.statusText + ' (' + o.errorMessage + ')');
+				for(let k in o) {
+					if(!(k in e)) {
+						e[k] = o[k];
+					}
+				}
+				reject(e);
 			} else {
 				reject(new Error(xhr.status + ' ' + xhr.statusText));
 			}
@@ -361,7 +367,7 @@ GotapiClient.prototype.request = function(params) {
 				reject(new Error('[AUTH ERROR] The response is not trusted.'));
 			}
 		}).catch((error) => {
-			reject(new Error('[AUTH ERROR] ' + error.message));
+			reject(error);
 		});
 	});
 	return promise;
