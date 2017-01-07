@@ -48,7 +48,16 @@ The OMA GotAPI specification is standardized mainly for smartphones (Android, iO
   * [`RequestMessage` object](#RequestMessage-object)
   * [`this.util.returnMessage()` method](#returnMessage-method)
   * [`this.util.pushMessage()` method](#pushMessage-method)
+  * [Returning an Error](#Returning-an-Error)
 * [API Reference for Front-End Application](#API-Reference-for-Front-End-Application)
+  * [`GotapiClient` object](#GotapiClient-object)
+  * [`connect()` method](#connect-method)
+  * [`request()` method](#request-method)
+  * [`Response` object](#response-object)
+  * [`Error` object](#Error-object)
+  * [`onmessage` property](#onmessage-property)
+  * [`requestServiceDiscovery()` method](#requestServiceDiscovery-method)
+  * [`disconnect()` method](#disconnect-method)
 * [References](#References)
 * [License](#License)
 
@@ -985,16 +994,212 @@ Property      |             | Type   | Description
 
 ### <a name="returnMessage-method">`this.util.returnMessage()` method</a>
 
-This method returns a response to the front-end application through the GotAPI Server and GotAPI-1 Interface. See the section "[Creating an one-shot API](#Creating-an-one-shot-API)" for details.
+This method returns a response to the front-end application through the GotAPI Server and GotAPI-1 Interface. This method takes an ['RequestMessage`](#RequestMessage-object) object as the 1st argument.
+
+If the request does not fail, the `data` property must be added to the ['RequestMessage`](#RequestMessage-object) object, then passed it to this method.
+
+If the request failed, the `result` property must be added to the ['RequestMessage`](#RequestMessage-object) object, then passed it to this method. You can also add the `errorMessage` property for your custom error message.
+
+The value of the `result` must be an integer grater than or equal to 400. Basically it is recommended that the value is assigned to an meaningful HTTP status code. If you want to assign it to your custom error code, see the section "[Returning an Error](#Returning-an-Error)" for details.
+
+```JavaScript
+GotapiPlugin.prototype.receiveMessage = function(message) {
+  ...
+  if(isSuccess) {
+    message['data'] = 'Something';
+    this.util.returnMessage(message);
+  } else {
+    message['result'] = 400;
+    message['errorMessage'] = 'Unknow profile was requested.';
+    this.util.returnMessage(message);
+  }
+};
+```
+
+See the section "[Creating an one-shot API](#Creating-an-one-shot-API)" for more information.
 
 ### <a name="pushMessage-method">`this.util.pushMessage()` method</a>
 
-This method push a notification to the front-end application through the GotAPI Server. Unlike the [`this.util.returnMessage()`](#returnMessage-method), the notification sent by this method is transfered to the front-end application through the GotAPI-5 Interface. See the section "[Creating an asynchronous push API](#Creating-an-asynchronous-push-API)" for details.
+This method pushes a notification to the front-end application through the GotAPI Server. Unlike the [`this.util.returnMessage()`](#returnMessage-method), the notification sent by this method is transfered to the front-end application through the GotAPI-5 Interface.
+
+This method takes an ['RequestMessage`](#RequestMessage-object) object as the 1st argument.
+
+The `data` property must be added to the ['RequestMessage`](#RequestMessage-object) object, then passed it to this method.
+
+When you want to push an error, the `result` property must be added to the ['RequestMessage`](#RequestMessage-object) object, then passed it to this method. You can also add the `errorMessage` property for your custom error message.
+
+The value of the `result` must be an integer grater than or equal to 400. Basically it is recommended that the value is assigned to an meaningful HTTP status code. If you want to assign it to your custom error code, see the section "[Returning an Error](#Returning-an-Error)" for details.
+
+See the section "[Creating an asynchronous push API](#Creating-an-asynchronous-push-API)" for more information.
+
+### <a name="Returning-an-Error">Returning an Error</a>
+
+If you want to return an error in response to the request from the front-end application, the properties as follows must be added to the [`RequestMessage`](#RequestMessage-object) object and returned it using the [`returnMessage()`](#returnMessage-method) or [`pushMessage()`](#pushMessage-method).
+
+Property       | Required | Type   | Description
+:--------------|:---------|:-------|:-----------
+`result`       | Required | Number | This value represents an error code for the Plug-In. It must be an integer grater than 0. The meaning of the error code depends on the Plug-In. It is recommended to assign an appropriate HTTP status code grater than or equal to 400. If you want to assign your custom error code instead of a HTTP status code, the `errorCode` property representing a HTTP status code also must be added to the [`RequestMessage`](#RequestMessage-object) object.
+`errorCode`    | Optional | Number | This value represents an HTTP status code. It must be an integer grater than or equal to 400 and an appropriate HTTP status code representing the relevant error. This property is required if the `result` is assigned to a custom error code.
+`errorMessage` | Optional | String | This value is an error message.
+
+The code below shows how to return an error with a custom error code:
+
+```JavaScript
+GotapiPlugin.prototype.receiveMessage = function(message) {
+  ...
+  message['result'] = 1009; // Custom error code
+  message['errorCode'] = 400; // HTTP status code
+  message['errorMessage'] = 'The device was disconnected.';
+  this.util.returnMessage(message);
+};
+```
 
 ---------------------------------------
 ## <a name="API-Reference-for-Front-End-Application">API Reference for Front-End Application</a>
 
-*work in progress*
+This section describes the APIs to help you to develop front-end applications.
+
+### <a name="GotapiClient-object">`GotapiClient` object</a>
+
+The `node-gotapi` serves a JavaScript library for helping to develop front-end applications through the Web Server for front-end applications. You can access it at:
+
+```
+https://localhost:10443/gotapi-client.js
+```
+
+by default.
+
+In order to use it, use a `script` element in the HTML file of your front-end application like this:
+
+```HTML
+<script src="/gotapi-client.js"></script>
+<script>
+// Write your code here
+</script>
+```
+
+Loading the `gotapi-client.js`, you can access the `GotapiClient` constructor. You have to create an instance from the `GotapiClient` constructor as follows:
+
+```JavaScript
+let gotapi = new GotapiClient();
+```
+
+The variable `gotapi` represents a `GotapiClient` object. You can access some methods exposed by the object.
+
+### <a name="connect-method">`connect()` method</a>
+
+The `connect()` method establishes a connection with the GotAPI Server. This method runs the service discovery transaction, the client ID request transaction, and the access token request transaction automatically. This method takes no argument.
+
+This method returns a `Promise` object. If the front-end application successfuly established with the GotAPI Server, an `Array` object representing the list of the available services is passed to the resolve function. At this point, it is ready to send requests to the Plug-In through the GotAPI Server.
+
+```JavaScript
+gotapi.connect().then((services) => {
+  // Do something
+});
+```
+
+You can find the details of the `service` object in the list of services in the section "[Defining the services which your Plug-In serves](#Defining-the-services-which-your-Plug-In-serves)".
+
+### <a name="request-method">`request()` method</a>
+
+The `request()` method sends a request to the Plug-In using the GotAPI-1 Interface. This method takes a `Request` object representing the request parameters. The `Request` object is just a hash object, it must have the properties as follows:
+
+Property      |Type    | Description
+:-------------|:-------|:-----------
+`method`      | String | The HTTP method. the value must be either "`get`", "`post`", "`put`", "`delete`".
+`servcieId`   | String | The service ID. You can know it from the `service` object obtained from the [`connect()`](#connect-method) method.
+`profile`     | String | The profile name.
+`attribute`   | String | The attribute name.
+(any)         | String | If the Plug-In requires any parameters, you can add any properties. Note that the type of the value must be String.
+
+The code below is a sample of using the `request()` method:
+
+```JavaScript
+gotapi.connect().then((services) => {
+  return gotapi.request({
+    method    : 'get',
+    serviceId : 'com.github.futomi.hello-world.echo',
+    profile   : 'echo',
+    attribute : '',
+    msg       : 'hello!'
+  });
+}).then((res) => {
+  document.querySelector('#res').textContent = res['data'];
+}).catch((error) => {
+  document.querySelector('#res').textContent = error.message;
+});
+```
+
+The `request()` method is successfully run and the response came from the Plug-In, a [`Response`](#Response-object) object is passed to the resolve function. See the section "[`Response` object](#Response-object)" for details.
+
+Otherwise, if an error came from the Plug-In, a [`Error`](#Error-object) is passed to the reject function. See the section "[`Error` object](#Error-object) for details.
+
+### <a name="response-object">`Response` object</a>
+
+The `Response` object consists of the properties as follows:
+
+Property       |Type    | Description
+:--------------|:-------|:-----------
+`result`       | Number | The code number representing the result. The value is sure to be 0.
+`serviceId`    | String | This value represents the service ID of the Plug-In.
+`profile`      | String | This value represents the profile name of the service.
+`attribute`    | String | This value represents the attribute name of the profile.
+`data`         | (any)  | The response data generated by the Plug-In. The type of the value depends on the Plug-In.
+`product`      | String | The name of the implementation of the GotAPI Server (i.e., the `node-gotapi`). The `node-gotapi` assigns "`GotAPI Server for Node.js" to this property.
+`version`      | String | The version of the implementation of the GotAPI Server (i.e., the `node-gotapi`).
+
+### <a name="Error-object">`Error` object</a>
+
+The `Response` object is passed to the reject function for the `request()` method, which is extended from an ECMAScript `Error` object. It consists of the properties as follows:
+
+Property       |Type    | Description
+:--------------|:-------|:-----------
+`message`      | String | This value represents a human-readable error message.
+`result`       | Number | This value represents an error code defined by the Plug-In. The value is an integer grater than 0. The meaning of the code depends on the Plug-In.
+`serviceId`    | String | This value represents the service ID of the Plug-In.
+`profile`      | String | This value represents the profile name of the service.
+`attribute`    | String | This value represents the attribute name of the profile.
+`errorCode`    | Number | This value represents an HTTP status code, which is an integer grater than or equal to 400.
+`errorText`    | String | This value represents an HTTP status message. For example, if the value of the `errorCode` property is 403, this value is "Forbidden".
+`errorMessage` | String | This value is an error message reported by the Plug-In.
+`product`      | String | The name of the implementation of the GotAPI Server (i.e., the `node-gotapi`). The `node-gotapi` assigns "`GotAPI Server for Node.js" to this property.
+`version`      | String | The version of the implementation of the GotAPI Server (i.e., the `node-gotapi`).
+
+### <a name="onmessage-property">`onmessage` property</a>
+
+The `onmessage` property is an event handler called when the notification comes from the Plug-In through the GotAPI Server. A [`Response`](#Response-object) object is passed to the callback function attached to this property. See the section "[`Response` object](#Response-object)" for details.
+
+```JavaScript
+gotapi.onmessage = (res) => {
+  document.querySelector('#res').textContent = message['data'];
+};
+```
+
+If the Plug-In sends an error notification, an [`Error`](#Error-object) object is passed to the callback function attached to this property. See the section "[`Error` object](#Error-object)" for details.
+
+In order to check if the response is an error or not, evaluate the `result` property in the object passed to the callback function. If the value of the `result` property is 0, the object is a [`Response`](#Response-object) object. Otherwise, the object is an [`Error`](#Error-object) object.
+
+### <a name="requestServiceDiscovery-method">`requestServiceDiscovery()` method</a>
+
+This method starts the service discovery process. The [`connect()`](#connect-method) method also calls this method automatically. If you want to obtain the current available services from the installed Plug-Ins, you can start the service discovery process again calling this method anytime after the front-end application connected to the GotAPI Server.
+
+This method returns a `Promise` object. If this method was successfully run, an Array object representing the list of the available services is passed to the resolve function.
+
+```JavaScript
+gotapi.requestServiceDiscovery().then((services) => {
+  // Do something
+});
+```
+
+You can find the details of the `service` object in the list of services in the section "[Defining the services which your Plug-In serves](#Defining-the-services-which-your-Plug-In-serves)".
+
+### <a name="disconnect-method">`disconnect()` method</a>
+
+The `disconnect()` method disconnects the GotAPI Server. Unlike the other methods, this method does not return any `Promise` object because this method is synchronous.
+
+```JavaScript
+gotapi.disconnect();
+```
 
 ---------------------------------------
 ## <a name="References">References</a>
