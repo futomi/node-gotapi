@@ -317,10 +317,31 @@ GotapiClient.prototype._establishIf5Connection = function() {
 			resolve();
 			ws.onmessage = (res) => {
 				if(this.onmessage && typeof(this.onmessage) === 'function') {
+					let o = null;
 					try {
-						let o = JSON.parse(res.data);
-						this.onmessage(o);
+						o = JSON.parse(res.data);
 					} catch(e) {}
+					if(o) {
+						if(o['result'] === 0) {
+							this.onmessage(o);
+						} else {
+							let e = new Error(o['errorCode'] + ' ' + o['errorText'] + ' (' + o['errorMessage'] + ')');
+							for(let k in o) {
+								if(!(k in e)) {
+									e[k] = o[k];
+								}
+							}
+							this.onmessage(e);
+						}
+					} else {
+						var error_message = '500 Internal Server Error (JSON parse error.)';
+						let e = new Error(error_message);
+						e['result'] = 500;
+						e['errorCode'] = 500;
+						e['errorText'] = 'Internal Server Error';
+						e['errorMessage'] = error_message;
+						this.onmessage(e);
+					}
 				}
 				if(this._isOnCommunicationSet()) {
 					this.oncommunication({if:5, dir:2, body:res.data});
