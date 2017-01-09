@@ -37,7 +37,7 @@ module.exports = {
 	/* --------------------------------------------------------------
 	* - Port number for the http server for web applications
 	* ------------------------------------------------------------ */
-	"http_server_port": 10080,
+	"http_server_port": 10880,
 
 	/* --------------------------------------------------------------
 	* - The path of the document root for web applications.
