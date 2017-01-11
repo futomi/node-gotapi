@@ -81,13 +81,14 @@ $ npm install fs-extra
 $ npm install pem
 $ npm install websocket.io
 $ npm install node-gotapi
+$ cp -a ~/node_modules/node-gotapi ~/node-gotapi
 ```
 
 If you want to install the `node-gotapi` on Windows, use the PowerShell instead of the Command Prompt.
 
-Never install it globaly. That is, never use the `-g` option of the `npm` command. The `node-gotapi` creates some files in its root directory when it is started for the first time. If you installed the `node-gotapi` using the `npm` command with the `-g` option, the `node-gotapi` could not create the files, you could not start the `node-gotapi` eventually.
+Never install it globally. That is, never use the `-g` option of the `npm` command. The `node-gotapi` creates some files in its root directory when it is started for the first time. If you installed the `node-gotapi` using the `npm` command with the `-g` option, the `node-gotapi` could not create the files, you could not start the `node-gotapi` eventually.
 
-The `node-gotapi` works in any locations as long as it can create files in it. You can just copy the directory of the `node-gotapi` at a location you want instead of using the `npm` command.
+You have to copy the directory of the `node-gotapi` in the `node_modules` directory to another location you want. Never run the `node-gotapi` in the directory where it was installed initially because it will be reset when you update it using the `npm` command.
 
 ### Directories
 
@@ -111,14 +112,14 @@ Path                    | Description
 To start the `node-gotapi`, run the `start-gotapi.js`:
 
 ```
-$ cd ~/node_modules/node-gotapi
+$ cd ~/node-gotapi
 $ node ./start-gotapi.js
 ```
 
 You can use the `start.js` for debugging:
 
 ```
-$ node ./start.js`
+$ node ./start-gotapi-debug.js`
 ```
 
 It shows all messages on the GotAPI-1 Interface on the shell.
