@@ -4,7 +4,7 @@
 *
 * Copyright (c) 2017, Futomi Hatano, All rights reserved.
 * Released under the MIT license
-* Date: 2017-01-05
+* Date: 2017-01-11
 * ---------------------------------------------------------------- */
 'use strict';
 process.chdir(__dirname);
@@ -112,7 +112,17 @@ function startServer() {
 	let GotapiServer = require('./lib/gotapi-server.js');
 	let gotapi_server = new GotapiServer(config);
 	if(require.main === module) {
-		gotapi_server.start();
+		gotapi_server.start(() => {
+			// For debug
+			/*
+			if(global.gc) {
+				setInterval(() => {
+					global.gc();
+					console.log(process.memoryUsage());
+				}, 60000);
+			}
+			*/
+		});
 	} else {
 		module.exports = gotapi_server;
 	}
