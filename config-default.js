@@ -82,7 +82,7 @@ module.exports = {
 	*     This is the period which the GotAPI Server waits for the
 	*     response from the Plug-In. The unit is second.
 	* ------------------------------------------------------------ */
-	"plugin_response_timeout": 10,
+	"plugin_response_timeout": 60,
 
 	/* --------------------------------------------------------------
 	* - The application ID of this GotAPI Server
