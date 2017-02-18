@@ -1,6 +1,6 @@
 {
   "name": "node-gotapi",
-  "version": "0.0.18",
+  "version": "0.1.0",
   "description": "The node-gotapi is a Node.js implementation of the Generic Open Terminal API Framework (GotAPI) developed by the Open Mobile Alliance (OMA).",
   "main": "./start-gotapi.js",
   "files": [

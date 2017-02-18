@@ -48,6 +48,7 @@ The OMA GotAPI specification is standardized mainly for smartphones (Android, iO
   * [`RequestMessage` object](#RequestMessage-object)
   * [`this.util.returnMessage()` method](#returnMessage-method)
   * [`this.util.pushMessage()` method](#pushMessage-method)
+  * [Prohibited property names for response](#prohibited-property-names-for-response)
   * [Returning an Error](#Returning-an-Error)
 * [API Reference for Front-End Application](#API-Reference-for-Front-End-Application)
   * [`GotapiClient` object](#GotapiClient-object)
@@ -58,6 +59,8 @@ The OMA GotAPI specification is standardized mainly for smartphones (Android, iO
   * [`onmessage` property](#onmessage-property)
   * [`requestServiceDiscovery()` method](#requestServiceDiscovery-method)
   * [`disconnect()` method](#disconnect-method)
+* [Starting the GotAPI Server in the debug mode](#Starting-the-GotAPI-Server-in-the-debug-mode)
+* [Changelog](#Changelog)
 * [References](#References)
 * [License](#License)
 
@@ -116,7 +119,7 @@ $ cd ~/node-gotapi
 $ node ./start-gotapi.js
 ```
 
-You can use the `start.js` for debugging:
+The `start-gotapi.js` is used for the production, it shows anything on your shell. You can also use the `start-gotapi-debug.js` for debugging:
 
 ```
 $ node ./start-gotapi-debug.js`
@@ -138,6 +141,8 @@ If the GotAPI Server was successfully started, you can see the message in the co
 The GotAPI Server has been started successfully.
 Your web application can be accessed at https://localhost:10443
 ```
+
+See the section "[Starting the GotAPI Server in the debug mode](#Starting-the-GotAPI-Server-in-the-debug-mode)" for details about the `start-gotapi-debug.js`.
 
 Access to `https://localhost:10443` using a web browser. You will find a list of the sample applications.
 
@@ -351,7 +356,7 @@ GotapiPlugin.prototype.receiveMessage = function(message) {
 module.exports = GotapiPlugin;
 ```
 
-As you cansee, you don't need to write the codes for the transactions required by the GotAPI because the helper module do that instead you. You can focus on the logic related to the role of the Plug-In. Let's see the codes in detail step by step.
+As you can see, you don't need to write the codes for the transactions required by the GotAPI because the helper module do that instead you. You can focus on the logic related to the role of the Plug-In. Let's see the codes in detail step by step.
 
 ```JavaScript
 let GotapiPlugin = function(util) {
@@ -437,8 +442,8 @@ Lastly, you have to return the result to the GotAPI Server using the `this.util.
 Property       | Type   | Description
 :--------------|:-------|:-----------
 `result`       | Number | An integer representing the result of the method. If the method was executed successfully, this value must be 0. Otherwise, the value must be one of the HTTP status code (e.g. 400).
-`data`         | Object | An hash object representing the result. The structure of the object is arbitrary. That is, you can freely define the structure.
 `errorMessage` | String | If the method was failed, you can set a custom error message.
+(any)          | (any)  | You can set any data representing the result. You can use any property name except the [prohibited property names for response](#prohibited-property-names-for-response). In the sample code above, the `data` property is set for the response.
 
 You have developed the sample Plug-In now. Let's go to the next step.
 
@@ -993,7 +998,7 @@ Property      |             | Type   | Description
 
 This method returns a response to the front-end application through the GotAPI Server and GotAPI-1 Interface. This method takes an ['RequestMessage`](#RequestMessage-object) object as the 1st argument.
 
-If the request does not fail, the `data` property must be added to the ['RequestMessage`](#RequestMessage-object) object, then passed it to this method.
+If the request does not fail, the ['RequestMessage`](#RequestMessage-object) object must be passed to this method. You can set any properties to the ['RequestMessage`](#RequestMessage-object) object as the response data except the [prohibited property names for response](#prohibited-property-names-for-response).
 
 If the request failed, the `result` property must be added to the ['RequestMessage`](#RequestMessage-object) object, then passed it to this method. You can also add the `errorMessage` property for your custom error message.
 
@@ -1015,19 +1020,49 @@ GotapiPlugin.prototype.receiveMessage = function(message) {
 
 See the section "[Creating an one-shot API](#Creating-an-one-shot-API)" for more information.
 
-### <a name="pushMessage-method">`this.util.pushMessage()` method</a>
+### <a name="pushMessage-method">`this.util.pushMessage() method</a>
 
 This method pushes a notification to the front-end application through the GotAPI Server. Unlike the [`this.util.returnMessage()`](#returnMessage-method), the notification sent by this method is transfered to the front-end application through the GotAPI-5 Interface.
 
-This method takes an ['RequestMessage`](#RequestMessage-object) object as the 1st argument.
+This method takes an [`RequestMessage`](#RequestMessage-object) object as the 1st argument.
 
-The `data` property must be added to the ['RequestMessage`](#RequestMessage-object) object, then passed it to this method.
+The `data` property must be added to the [`RequestMessage`](#RequestMessage-object) object, then passed it to this method.
 
 When you want to push an error, the `result` property must be added to the ['RequestMessage`](#RequestMessage-object) object, then passed it to this method. You can also add the `errorMessage` property for your custom error message.
 
 The value of the `result` must be an integer grater than or equal to 400. Basically it is recommended that the value is assigned to an meaningful HTTP status code. If you want to assign it to your custom error code, see the section "[Returning an Error](#Returning-an-Error)" for details.
 
 See the section "[Creating an asynchronous push API](#Creating-an-asynchronous-push-API)" for more information.
+
+### <a name="prohibited-property-names-for-response">Prohibited property names for response</a>
+
+As described above, when the Plug-In is subject to respond for a request, the [`RequestMessage`](#RequestMessage-object) object representing the request must be passed to the [`this.util.returnMessage()`](#returnMessage-method) or the [`this.util.pushMessage()`](#pushMessage-method) method as a response.
+
+Though you can append any properties in the [`RequestMessage`](#RequestMessage-object) object, some property names are prohibited as response data as follows:
+
+```
+if_type
+request_id
+request_url
+params
+package
+api
+profile
+attribute
+method
+receiver
+requestCode
+clientId
+accessToken
+action
+errorMessage
+result
+errorCode
+```
+
+Besides, the property name which starts with "`_`" (underscore) is prohibited as well. That is, you can use a property name "`something`", while you can **not** use a property name "`_something`".
+
+If you use prohibited property names, the values are ignored when it is passed to the front end application.
 
 ### <a name="Returning-an-Error">Returning an Error</a>
 
@@ -1197,6 +1232,66 @@ The `disconnect()` method disconnects the GotAPI Server. Unlike the other method
 ```JavaScript
 gotapi.disconnect();
 ```
+
+---------------------------------------
+## <a name="Starting-the-GotAPI-Server-in-the-debug-mode">Starting the GotAPI Server in the debug mode</a>
+
+The `start-gotapi.js` is used for the production, it shows anything on your shell. It disables the `console.log()`, `console.dir()` and `console.error()` method. When you develop a front-end application or a Plug-In, you can use the `start-gotapi-debug.js` to start the GotAPI Server instead of using the `start-gotapi.js`.
+
+```
+$ node start-gotapi-debug.js
+```
+
+The `start-gotapi-debug.js` enables the `console.log()`, `console.dir()` and `console.error()` methods in your codes. You can see the outputs generated by the GotAPI Server and the Plug-Ins on your shell.
+
+Besides, the `start-gotapi-debug.js` shows the messages coming and going between the front-end application and the GotAPI Server on your shell as follows:
+
+```
+----------------------------------------------
+>> IF-1
+
+GET /gotapi/availability?key=ce517c7a15b7073142b737f3733128f4e667c0893c9d8717f3cfcd1049f9b457
+
+----------------------------------------------
+<< IF-1
+
+200 OK
+
+{
+  "profile": "availability",
+  "attribute": "",
+  "product": "node-gotapi",
+  "version": "0.1.0",
+  "result": 0,
+  "errorCode": 0,
+  "errorMessage": "",
+  "errorText": ""
+}
+```
+
+The `start-gotapi-debug.js` supports some command-line options as follows:
+
+Options             | Description
+:-------------------|:---------------
+`--disable-auth`    | Disables the grant and access token mechanism. This mode is used for developing Plug-Ins.
+`--disable-monitor` | Disables to show messages between the front-end application and the GotAPI Server.
+
+When you develop a Plug-In, you can use the `--disable-auth` option so that you can send HTTP REST request using, for example, the [`curl`](https://curl.haxx.se/) without the authorization process.
+
+```
+$ node start-gotapi-debug.js --disable-auth
+```
+
+If you want to see only the errors occurred in the Plug-In you are developing on the shell, you can use the `--disable-monitor`.
+
+```
+$ node start-gotapi-debug --disable-monitor
+```
+
+---------------------------------------
+## <a name="Changelog">Changelog</a>
+
+See the "[`CHANGELOG.md`](CHANGELOG.md)".
 
 ---------------------------------------
 ## <a name="References">References</a>

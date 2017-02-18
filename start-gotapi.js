@@ -112,7 +112,7 @@ function startServer() {
 	let GotapiServer = require('./lib/gotapi-server.js');
 	let gotapi_server = new GotapiServer(config);
 	if(require.main === module) {
-		gotapi_server.start(() => {
+		gotapi_server.start({}, () => {
 			// For debug
 			/*
 			if(global.gc) {
