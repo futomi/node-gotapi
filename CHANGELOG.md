@@ -1,6 +1,9 @@
 node-gotapi Changelog
 ======================
 
+## 0.1.1 (2017-02-26)
+- Changed the WebSocket module from the [websocket.io](https://github.com/LearnBoost/websocket.io) to the [WebSocket-Node](https://github.com/theturtle32/WebSocket-Node). The reason for this is that the [websocket.io](https://github.com/LearnBoost/websocket.io) has not been updated for a few years and it does not support Node 6 for now.
+
 ## 0.1.0 (2017-02-18)
 - Added a debug mode
   - The `start-gotapi-debug.js` now supports a mode which ignores the grant and access token mechanism. In this mode, you can debug Plug-Ins easily.

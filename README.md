@@ -72,7 +72,7 @@ The OMA GotAPI specification is standardized mainly for smartphones (Android, iO
 * [Node.js](https://nodejs.org/en/) 6 +
 * [fs-extra](https://www.npmjs.com/package/fs-extra) 1.0.0 +
 * [pem](https://www.npmjs.com/package/pem) 1.9.4 +
-* [websocket.io](https://www.npmjs.com/package/websocket.io) 0.1.1 +
+* [websocket](https://www.npmjs.com/package/websocket) 1.0.24 +
 
 ### How to install
 
@@ -82,7 +82,7 @@ The simplest way to install the `node-gotapi` is to use the `npm` command:
 $ cd ~
 $ npm install fs-extra
 $ npm install pem
-$ npm install websocket.io
+$ npm install websocket
 $ npm install node-gotapi
 $ cp -a ~/node_modules/node-gotapi ~/node-gotapi
 ```
