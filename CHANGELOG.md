@@ -1,6 +1,10 @@
 node-gotapi Changelog
 ======================
 
+## 0.1.2 (2017-03-04)
+
+- Removed the script `start-gotapi-debug.js` which starts the node-gotapi for debugging. Instead, `start-gotapi.js` supports some command options for debugging.
+
 ## 0.1.1 (2017-02-26)
 - Changed the WebSocket module from the [websocket.io](https://github.com/LearnBoost/websocket.io) to the [WebSocket-Node](https://github.com/theturtle32/WebSocket-Node). The reason for this is that the [websocket.io](https://github.com/LearnBoost/websocket.io) has not been updated for a few years and it does not support Node 6 for now.
 

@@ -4,12 +4,36 @@
 *
 * Copyright (c) 2017, Futomi Hatano, All rights reserved.
 * Released under the MIT license
-* Date: 2017-01-11
+* Date: 2017-03-04
 * ---------------------------------------------------------------- */
 'use strict';
 process.chdir(__dirname);
 let mPath = require('path');
 let mFs = require('fs-extra');
+
+// Command line options
+let enable_debug = false;
+let disable_auth = false;
+let disable_monitor = false;
+if(process.argv.length > 2) {
+	for(let i=2; i<process.argv.length; i++) {
+		let opt = process.argv[i];
+		if(opt === '--enable-debug') {
+			enable_debug = true;
+		} else if(opt === '--disable-auth') {
+			disable_auth = true;
+		} else if(opt === '--disable-monitor') {
+			disable_monitor = true; 
+		} else {
+			console.log('Unknow option: ' + opt);
+			process.exit();
+		}
+	}
+}
+if(enable_debug === false) {
+	disable_auth = false;
+	disable_monitor = true;
+}
 
 if(!_isExistFile('./config.js')) {
 	try {
@@ -111,21 +135,53 @@ if(config['ssl_engine'] === true) {
 function startServer() {
 	let GotapiServer = require('./lib/gotapi-server.js');
 	let gotapi_server = new GotapiServer(config);
-	if(require.main === module) {
-		gotapi_server.start({}, () => {
-			// For debug
-			/*
-			if(global.gc) {
-				setInterval(() => {
-					global.gc();
-					console.log(process.memoryUsage());
-				}, 60000);
+
+	if(disable_monitor === false) {
+		gotapi_server.oncommunication = (m) => {
+			console.log('----------------------------------------------');
+			// The direction of the message and the GotAPI Interface
+			if(m['dir'] === 1) { // incoming message
+				console.log('>> IF-' + m['type']);
+			} else if(m['dir'] === 2) { // outgoing message
+				console.log('<< IF-' + m['type']);
 			}
-			*/
-		});
-	} else {
-		module.exports = gotapi_server;
+			console.log('');
+			// The contents of the message
+			if(m['type'] === 1) { // GotAPI-Interface-1/2 (HTTP)
+				if(m['dir'] === 1) { // incoming
+					console.log(m['method'] + ' ' + m['url']);
+				} else if(m['dir'] === 2) { // outgoing
+					if(m['code'] === 200) {
+						console.log(m['code'] + ' OK');
+					} else {
+						console.log(m['code'] + ' ' + m['data']['errorText']);
+					}
+					console.log('');
+					console.log(JSON.stringify(m['data'], null, '  '));
+				}
+			} else if(m['type'] === 5) { // GotAPI-Interface-5 (WebSocket)
+				console.log(JSON.stringify(m['data'], null, '  '));
+			} else if(m['type'] === 4) { // GotAPI-Interface-4 (Plug-In)
+				console.log(JSON.stringify(m['data'], null, '  '));
+			}
+			console.log('');
+		};
 	}
+
+	gotapi_server.start({
+		enable_console: enable_debug,
+		disable_auth: disable_auth
+	}, () => {
+		// For debug
+		/*
+		if(global.gc) {
+			setInterval(() => {
+				global.gc();
+				console.log(process.memoryUsage());
+			}, 60000);
+		}
+		*/
+	});
 }
 
 function _errorExit(message) {
