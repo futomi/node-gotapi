@@ -1,6 +1,10 @@
 node-gotapi Changelog
 ======================
 
+## 0.1.3 (2017-03-05)
+
+- Changed line break from CRLF to LF in some files.
+
 ## 0.1.2 (2017-03-04)
 
 - Removed the script `start-gotapi-debug.js` which starts the node-gotapi for debugging. Instead, `start-gotapi.js` supports some command options for debugging.
