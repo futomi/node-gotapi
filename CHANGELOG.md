@@ -1,9 +1,14 @@
 node-gotapi Changelog
 ======================
 
+## 0.1.5 (2017-03-07)
+
+- Fixed the bug which any accesses on the GotAPI-1 Interface are allowed in the production mode if the `allowed_address_list` is empty in the `config.js`.
+- Changed the error message reported when the access from the front-end application on the GotAPI-1 Interface is denied, so that you can get the reason why the access was denied: the IP address or the origin.
+
 ## 0.1.4 (2017-03-06)
 
-- Fixed the bug which the GotAPI-1 Interface always denied any accesses from the localhost in some Linux environments.
+- Fixed the bug which the GotAPI-1 Interface always denied any accesses from the localhost in some Linux environments in the production mode (not the debug mode).
 
 ## 0.1.3 (2017-03-05)
 
