@@ -1,6 +1,10 @@
 node-gotapi Changelog
 ======================
 
+## 0.1.4 (2017-03-06)
+
+- Fixed the bug which the GotAPI-1 Interface always denied any accesses from the localhost in some Linux environments.
+
 ## 0.1.3 (2017-03-05)
 
 - Changed line break from CRLF to LF in some files.
