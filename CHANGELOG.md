@@ -1,6 +1,10 @@
 node-gotapi Changelog
 ======================
 
+## 0.1.6 (2017-03-29)
+
+- Fixed the bug which Plug-Ins could not set a custom error code to the `result` property in a response.
+
 ## 0.1.5 (2017-03-07)
 
 - Fixed the bug which any accesses on the GotAPI-1 Interface are allowed in the production mode if the `allowed_address_list` is empty in the `config.js`.
