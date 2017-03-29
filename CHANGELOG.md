@@ -1,6 +1,10 @@
 node-gotapi Changelog
 ======================
 
+## 0.1.7 (2017-03-29)
+
+- Fixed the bug which the node-gotapi prosess was down if the query string in the request URL includes non-UTF-8 characters. Now the node-gotapi returns an error.
+
 ## 0.1.6 (2017-03-29)
 
 - Fixed the bug which Plug-Ins could not set a custom error code to the `result` property in a response.
