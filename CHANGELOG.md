@@ -1,6 +1,10 @@
 node-gotapi Changelog
 ======================
 
+## 0.1.8 (2017-03-30)
+
+- Fixed the bug in the debug mode. If there is no query string in the request URL, then the node-gotapi died. Now this bug is fixed.
+
 ## 0.1.7 (2017-03-29)
 
 - Fixed the bug which the node-gotapi prosess was down if the query string in the request URL includes non-UTF-8 characters. Now the node-gotapi returns an error.
