@@ -3,7 +3,7 @@
 *
 * Copyright (c) 2017, Futomi Hatano, All rights reserved.
 * Released under the MIT license
-* Date: 2017-01-07
+* Date: 2017-04-02
 * ---------------------------------------------------------------- */
 'use strict';
 
@@ -129,7 +129,7 @@ GotapiClient.prototype._isOnCommunicationSet = function() {
 	}
 };
 
-GotapiClient.prototype._httpRequest = function(method, url) {
+GotapiClient.prototype._httpRequest = function(method, url, data) {
 	let promise = new Promise((resolve, reject) => {
 		let xhr = new XMLHttpRequest();
 		xhr.onload = () => {
@@ -155,8 +155,11 @@ GotapiClient.prototype._httpRequest = function(method, url) {
 			reject(new Error('HTTP connection was refused.'));
 		};
 		xhr.open(method, url);
+		if(data) {
+			xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		}
 		xhr.responseType = 'json';
-		xhr.send();
+		xhr.send(data);
 		if(this._isOnCommunicationSet()) {
 			this.oncommunication({if:1, dir:1, method:method, url: url});
 		}
@@ -365,20 +368,33 @@ GotapiClient.prototype.request = function(params) {
 
 		let nonce = this._createRandomString();
 		let url = this.if1_base_url + '/gotapi/';
-		url += params['profile'] + '/' + params['attribute'] + '?';
-		//url += 'accessToken=' + this.access_token + '&nonce=' + nonce;
-		url += this._createQueryString({
+		url += params['profile'] + '/' + params['attribute'];
+
+		let q = {
 			accessToken : this.access_token,
 			nonce       : nonce
-		});
+		};
+
 		for(let k in params) {
 			if(!k.match(/^(profile|attribute|method)$/)) {
-				url += '&' + k + '=' + encodeURIComponent(params[k]);
+				q[k] = params[k];
+			}
+		}
+
+		let qstring = this._createQueryString(q);
+
+		let method = params['method'].toLowerCase();
+		let data = null;
+		if(method === 'post' || method === 'put') {
+			data = qstring;
+		} else {
+			if(q) {
+				url += '?' + qstring;
 			}
 		}
 
 		let res = null;
-		this._httpRequest(params['method'], url).then((o) => {
+		this._httpRequest(params['method'], url, data).then((o) => {
 			res = o;
 			return this._generateHmac(this.key, nonce);
 		}).then((hmac) => {

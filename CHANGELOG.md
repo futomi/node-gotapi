@@ -1,39 +1,49 @@
 node-gotapi Changelog
 ======================
 
-## 0.1.8 (2017-03-30)
+## Version 0.2
+
+### 0.2.0 (2017-04-03)
+
+- Now the GotAPI Server supports `application/x-www-form-urlencoded` requests for front-end applications. You can send data to the GotAPI Server as form data instead of a query string in a request URL.
+
+- Now the front-end JS helper library `gotapi-client.js` sends request parameters using `application/x-www-form-urlencoded` automatically when the method of the request is `POST` or `PUT`.
+
+## Version 0.1
+
+### 0.1.8 (2017-03-30)
 
 - Fixed the bug in the debug mode. If there is no query string in the request URL, then the node-gotapi died. Now this bug is fixed.
 
-## 0.1.7 (2017-03-29)
+### 0.1.7 (2017-03-29)
 
 - Fixed the bug which the node-gotapi prosess was down if the query string in the request URL includes non-UTF-8 characters. Now the node-gotapi returns an error.
 
-## 0.1.6 (2017-03-29)
+### 0.1.6 (2017-03-29)
 
 - Fixed the bug which Plug-Ins could not set a custom error code to the `result` property in a response.
 
-## 0.1.5 (2017-03-07)
+### 0.1.5 (2017-03-07)
 
 - Fixed the bug which any accesses on the GotAPI-1 Interface are allowed in the production mode if the `allowed_address_list` is empty in the `config.js`.
 - Changed the error message reported when the access from the front-end application on the GotAPI-1 Interface is denied, so that you can get the reason why the access was denied: the IP address or the origin.
 
-## 0.1.4 (2017-03-06)
+### 0.1.4 (2017-03-06)
 
 - Fixed the bug which the GotAPI-1 Interface always denied any accesses from the localhost in some Linux environments in the production mode (not the debug mode).
 
-## 0.1.3 (2017-03-05)
+### 0.1.3 (2017-03-05)
 
 - Changed line break from CRLF to LF in some files.
 
-## 0.1.2 (2017-03-04)
+### 0.1.2 (2017-03-04)
 
 - Removed the script `start-gotapi-debug.js` which starts the node-gotapi for debugging. Instead, `start-gotapi.js` supports some command options for debugging.
 
-## 0.1.1 (2017-02-26)
+### 0.1.1 (2017-02-26)
 - Changed the WebSocket module from the [websocket.io](https://github.com/LearnBoost/websocket.io) to the [WebSocket-Node](https://github.com/theturtle32/WebSocket-Node). The reason for this is that the [websocket.io](https://github.com/LearnBoost/websocket.io) has not been updated for a few years and it does not support Node 6 for now.
 
-## 0.1.0 (2017-02-18)
+### 0.1.0 (2017-02-18)
 - Added a debug mode
   - The `start-gotapi-debug.js` now supports a mode which ignores the grant and access token mechanism. In this mode, you can debug Plug-Ins easily.
 - Extended the name space of property names for response from Plug-Ins
