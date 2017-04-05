@@ -3,6 +3,10 @@ node-gotapi Changelog
 
 ## Version 0.2
 
+### 0.2.1 (2017-04-05)
+
+- Fixed (again) the bug that the node-gotapi prosess was down if the query string in the request URL includes non-UTF-8 characters. Now the node-gotapi returns an error.
+
 ### 0.2.0 (2017-04-03)
 
 - Now the GotAPI Server supports `application/x-www-form-urlencoded` requests for front-end applications. You can send data to the GotAPI Server as form data instead of a query string in a request URL.
@@ -17,7 +21,7 @@ node-gotapi Changelog
 
 ### 0.1.7 (2017-03-29)
 
-- Fixed the bug which the node-gotapi prosess was down if the query string in the request URL includes non-UTF-8 characters. Now the node-gotapi returns an error.
+- Fixed the bug that the node-gotapi prosess was down if the query string in the request URL includes non-UTF-8 characters. Now the node-gotapi returns an error.
 
 ### 0.1.6 (2017-03-29)
 
