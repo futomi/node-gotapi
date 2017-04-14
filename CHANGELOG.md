@@ -3,6 +3,11 @@ node-gotapi Changelog
 
 ## Version 0.2
 
+### 0.2.2 (2017-04-14)
+
+- Added error handling when a request URI is malformed (when failed to parse the query string in the request URI or form data in the request body).
+
+
 ### 0.2.1 (2017-04-05)
 
 - Fixed (again) the bug that the node-gotapi prosess was down if the query string in the request URL includes non-UTF-8 characters. Now the node-gotapi returns an error.
