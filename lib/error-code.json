@@ -1,0 +1,92 @@
+{
+	"ERROR": {
+		"result": 1,
+		"errorCode": "1",
+		"statusCode": 500,
+		"errorName": "ERROR"
+	},
+	"INVALID_PROFILE": {
+		"result": 2,
+		"errorCode": "2",
+		"statusCode": 404,
+		"errorName": "INVALID_PROFILE"
+	},
+	"INVALID_METHOD": {
+		"result": 3,
+		"errorCode": "3",
+		"statusCode": 405,
+		"errorName": "INVALID_METHOD"
+	},
+	"INVALID_ATTRIBUTE": {
+		"result": 4,
+		"errorCode": "4",
+		"statusCode": 404,
+		"errorName": "INVALID_ATTRIBUTE"
+	},
+	"INVALID_SERVICE_ID": {
+		"result": 5,
+		"errorCode": "5",
+		"statusCode": 400,
+		"errorName": "INVALID_SERVICE_ID"
+	},
+	"UNKNOWN_SERVICE": {
+		"result": 6,
+		"errorCode": "6",
+		"statusCode": 404,
+		"errorName": "UNKNOWN_SERVICE"
+	},
+	"TIMEOUT": {
+		"result": 7,
+		"errorCode": "7",
+		"statusCode": 408,
+		"errorName": "TIMEOUT"
+	},
+	"INVALID_PARAMETER": {
+		"result": 10,
+		"errorCode": "10",
+		"statusCode": 400,
+		"errorName": "INVALID_PARAMETER"
+	},
+	"NOT_AUTHORIZED": {
+		"result": 11,
+		"errorCode": "11",
+		"statusCode": 403,
+		"errorName": "NOT_AUTHORIZED"
+	},
+	"EXPIRED_TOKEN": {
+		"result": 12,
+		"errorCode": "12",
+		"statusCode": 403,
+		"errorName": "EXPIRED_TOKEN"
+	},
+	"INVALID_TOKEN": {
+		"result": 13,
+		"errorCode": "13",
+		"statusCode": 403,
+		"errorName": "INVALID_TOKEN"
+	},
+	"OUT_OF_SCOPE": {
+		"result": 14,
+		"errorCode": "14",
+		"statusCode": 403,
+		"errorName": "OUT_OF_SCOPE"
+	},
+	"INVALID_CLIENT_ID": {
+		"result": 15,
+		"errorCode": "15",
+		"statusCode": 401,
+		"errorName": "INVALID_CLIENT_ID"
+	},
+	"INVALID_ORIGIN": {
+		"result": 18,
+		"errorCode": "18",
+		"statusCode": 403,
+		"errorName": "INVALID_ORIGIN"
+	},
+	"INVALID_URL": {
+		"result": 19,
+		"errorCode": "19",
+		"statusCode": 400,
+		"errorName": "INVALID_URL"
+	}
+}

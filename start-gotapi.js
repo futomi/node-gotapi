@@ -10,6 +10,7 @@
 process.chdir(__dirname);
 let mPath = require('path');
 let mFs = require('fs-extra');
+let mHttp = require('http');
 
 // Command line options
 let enable_debug = false;
@@ -151,11 +152,7 @@ function startServer() {
 				if(m['dir'] === 1) { // incoming
 					console.log(m['method'] + ' ' + m['url']);
 				} else if(m['dir'] === 2) { // outgoing
-					if(m['code'] === 200) {
-						console.log(m['code'] + ' OK');
-					} else {
-						console.log(m['code'] + ' ' + m['data']['errorText']);
-					}
+					console.log(m['code'] + ' ' + mHttp.STATUS_CODES[m['code']]);
 					console.log('');
 					console.log(JSON.stringify(m['data'], null, '  '));
 				}

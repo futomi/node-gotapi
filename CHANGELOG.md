@@ -1,6 +1,18 @@
 node-gotapi Changelog
 ======================
 
+## Version 0.3
+
+### 0.3.0 (2017-04-22)
+
+- Changed the type of the `errorCode` property in the `Error` object from `Number` to `String` to be compliant to the OMA GotAPI 1.1 specification.
+  - In the node-gotapi v0.2.2 or earlier, the `errorCode` was used for a HTTP response status code on the GotAPI-1 Interface. Now, you can specify your favorite costom code to the `errorCode` property in your Plug-In module. Note that the type of the value must be `String` (e.g., `"E-0F2A"`).
+- Newly added the `statusCode` property in the `Response` object and the `Error` object.
+  - This property is used for a HTTP status code set in a response on the GotAPI-1 Interface instead of the `errorCode` property.
+  - In the node-gotapi v0.2.2 or earlier, the HTTP response code was set to `200` automatically if the response is not an error. Now you can use your favorite HTTP status code even if the response is not an error. That is, you can specify `201` (Created), `202` (Accepted), and so on.
+- Deleted the `errorCode`, `errorMessage`, `errorText` properties from the `Response` object to be compliant to the OMA GotAPI 1.1 specification.
+  - In the node-gotapi v0.2.2 or earlier, such properties were set in a `Response` object regardless they were useless. As that was confusing, they were removed.
+
 ## Version 0.2
 
 ### 0.2.2 (2017-04-14)

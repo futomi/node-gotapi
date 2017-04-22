@@ -345,10 +345,10 @@ GotapiPlugin.prototype.receiveMessage = function(message) {
     message['result'] = 0;
     message['data'] = message['params']['msg'];
   } else {
-    message['result'] = 400;
+    message['result'] = 1001;
     message['errorMessage'] = 'Unknow profile was requested.';
-    this.util.returnMessage(message);
   }
+  this.util.returnMessage(message);
 };
 
 module.exports = GotapiPlugin;
@@ -422,10 +422,10 @@ GotapiPlugin.prototype.receiveMessage = function(message) {
     message['result'] = 0;
     message['data'] = message['params']['msg'];
   } else {
-    message['result'] = 400;
+    message['result'] = 1001;
     message['errorMessage'] = 'Unknow profile was requested.';
-    this.util.returnMessage(message);
   }
+  this.util.returnMessage(message);
 };
 ```
 
@@ -437,10 +437,10 @@ You can obtain additional parameters from `message['params']` as appropriate. Th
 
 Lastly, you have to return the result to the GotAPI Server using the `this.util.returnMessage()` method. You have to append some properties to the message object as follows and execute the `this.util.returnMessage()` method with the message object as the first argument:
 
-Property       | Type   | Description
-:--------------|:-------|:-----------
-`result`       | Number | An integer representing the result of the method. If the method was executed successfully, this value must be 0. Otherwise, the value must be one of the HTTP status code (e.g. 400).
-`errorMessage` | String | If the method was failed, you can set a custom error message.
+Property       | Type   | Required | Description
+:--------------|:-------|:---------|:-----------
+`result`       | Number | Required | An integer representing the result of the method. If the method was executed successfully, this value must be 0. Otherwise, the value must be an integer grater than 0.
+`errorMessage` | String | Optional | If the method was failed, you can set a custom error message.
 (any)          | (any)  | You can set any data representing the result. You can use any property name except the [prohibited property names for response](#prohibited-property-names-for-response). In the sample code above, the `data` property is set for the response.
 
 You have developed the sample Plug-In now. Let's go to the next step.
@@ -566,7 +566,7 @@ GotapiPlugin.prototype.receiveMessage = function(message) {
   if(message['profile'] === 'clock' && message['attribute'] === 'ticktack') {
     this.ticktack(message);
   } else {
-    message['result'] = 400;
+    message['result'] = 1001;
     message['errorMessage'] = 'Unknow profile was requested.';
     this.util.returnMessage(message);
   }
@@ -584,8 +584,7 @@ GotapiPlugin.prototype.ticktack = function(message) {
   } else if(message['method'] === 'delete') {
     this.stopTicktack(message);
   } else {
-    message['result'] = 400;
-    message['data'] = null;
+    message['result'] = 1001;
     message['errorMessage'] = 'The HTTP Method `' + message['method'] + '` is not supported.';
     this.util.returnMessage(message);
   }
@@ -599,7 +598,6 @@ The `startTicktack()` method is as follows:
 ```JavaScript
 GotapiPlugin.prototype.startTicktack = function(message) {
   message['result'] = 0;
-  message['data'] = null;
   this.util.returnMessage(message);
 
   this.ticktack_timer_id = setInterval(() => {
@@ -996,21 +994,27 @@ Property      |             | Type   | Description
 
 This method returns a response to the front-end application through the GotAPI Server and GotAPI-1 Interface. This method takes an ['RequestMessage`](#RequestMessage-object) object as the 1st argument.
 
-If the request does not fail, the ['RequestMessage`](#RequestMessage-object) object must be passed to this method. You can set any properties to the ['RequestMessage`](#RequestMessage-object) object as the response data except the [prohibited property names for response](#prohibited-property-names-for-response).
+If the request was accepted successfully, the `result` property must be set to `0` on the ['RequestMessage`](#RequestMessage-object) object, then the object must be passed to this method. 
 
-If the request failed, the `result` property must be added to the ['RequestMessage`](#RequestMessage-object) object, then passed it to this method. You can also add the `errorMessage` property for your custom error message.
+You can set any properties to the ['RequestMessage`](#RequestMessage-object) object as the response data except the [prohibited property names for response](#prohibited-property-names-for-response). In the code snippt below, the `data` property is added.
 
-The value of the `result` must be an integer grater than or equal to 400. Basically it is recommended that the value is assigned to an meaningful HTTP status code. If you want to assign it to your custom error code, see the section "[Returning an Error](#Returning-an-Error)" for details.
+If the request failed, the `result` property must be set to an integer grater than 0 on the ['RequestMessage`](#RequestMessage-object) object. You can also add the `errorMessage` property for your custom error message.
+
+By default, the response is returned to the front-end application with HTTP status code `200` if the request succeeded, or `400` (Bad Request) if the request failed. If you want change the HTTP status code, you can add the `statusCode` property on the ['RequestMessage`](#RequestMessage-object) object. Be sure that the value of the `statusCode` is consistent with the `result` property. If the `result` property is set to `0`, the `statusCode` must be "2xx Success". Otherwise, it must be "4xx Client errors" or "5xx Server error".
 
 ```JavaScript
 GotapiPlugin.prototype.receiveMessage = function(message) {
   ...
   if(isSuccess) {
+    message['result'] = 0;
     message['data'] = 'Something';
+    message['statusCode'] = 201;
     this.util.returnMessage(message);
   } else {
-    message['result'] = 400;
+    message['result'] = 1001;
+    message['errorCode'] = "1001";
     message['errorMessage'] = 'Unknow profile was requested.';
+    message['statusCode'] = 400;
     this.util.returnMessage(message);
   }
 };
@@ -1018,7 +1022,7 @@ GotapiPlugin.prototype.receiveMessage = function(message) {
 
 See the section "[Creating an one-shot API](#Creating-an-one-shot-API)" for more information.
 
-### <a name="pushMessage-method">`this.util.pushMessage() method</a>
+### <a name="pushMessage-method">`this.util.pushMessage()` method</a>
 
 This method pushes a notification to the front-end application through the GotAPI Server. Unlike the [`this.util.returnMessage()`](#returnMessage-method), the notification sent by this method is transfered to the front-end application through the GotAPI-5 Interface.
 
@@ -1056,6 +1060,8 @@ action
 errorMessage
 result
 errorCode
+errorText
+statusCode
 ```
 
 Besides, the property name which starts with "`_`" (underscore) is prohibited as well. That is, you can use a property name "`something`", while you can **not** use a property name "`_something`".
@@ -1068,18 +1074,20 @@ If you want to return an error in response to the request from the front-end app
 
 Property       | Required | Type   | Description
 :--------------|:---------|:-------|:-----------
-`result`       | Required | Number | This value represents an error code for the Plug-In. It must be an integer grater than 0. The meaning of the error code depends on the Plug-In. It is recommended to assign an appropriate HTTP status code grater than or equal to 400. If you want to assign your custom error code instead of a HTTP status code, the `errorCode` property representing a HTTP status code also must be added to the [`RequestMessage`](#RequestMessage-object) object.
-`errorCode`    | Optional | Number | This value represents an HTTP status code. It must be an integer grater than or equal to 400 and an appropriate HTTP status code representing the relevant error. This property is required if the `result` is assigned to a custom error code.
+`result`       | Required | Number | This value represents an error code for the Plug-In. It must be an integer grater than 0. The meaning of the error code depends on the Plug-In.
+`errorCode`    | Optional | String | 
 `errorMessage` | Optional | String | This value is an error message.
+`statusCode`   | Optional | Number | This value represents an HTTP status code. It must be "4xx Client errors" (e.g., `400`, `403`) or "5xx Server error" (e.g., `500`).
 
 The code below shows how to return an error with a custom error code:
 
 ```JavaScript
 GotapiPlugin.prototype.receiveMessage = function(message) {
   ...
-  message['result'] = 1009; // Custom error code
-  message['errorCode'] = 400; // HTTP status code
+  message['result'] = 1009; // Result code 
+  message['errorCode'] = "E-03F1"; // Custom error code
   message['errorMessage'] = 'The device was disconnected.';
+  message['statusCode'] = 404; // HTTP status code
   this.util.returnMessage(message);
 };
 ```
@@ -1171,12 +1179,13 @@ The `Response` object consists of the properties as follows:
 Property       |Type    | Description
 :--------------|:-------|:-----------
 `result`       | Number | The code number representing the result. The value is sure to be 0.
+`statusCode`   | Number | The HTTP status code. Though this value should be `200` basically, it might another status code such as `201`, `202`, and so on. It depends on the Plug-In module.
 `serviceId`    | String | This value represents the service ID of the Plug-In.
 `profile`      | String | This value represents the profile name of the service.
 `attribute`    | String | This value represents the attribute name of the profile.
-`data`         | (any)  | The response data generated by the Plug-In. The type of the value depends on the Plug-In.
 `product`      | String | The name of the implementation of the GotAPI Server (i.e., the `node-gotapi`). The `node-gotapi` assigns "`node-gotapi`" to this property.
 `version`      | String | The version of the implementation of the GotAPI Server (i.e., the `node-gotapi`).
+(any)          | (any)  | The response data generated by the Plug-In. The property name and the type of the value depends on the Plug-In.
 
 ### <a name="Error-object">`Error` object</a>
 
@@ -1184,16 +1193,59 @@ The `Response` object is passed to the reject function for the `request()` metho
 
 Property       |Type    | Description
 :--------------|:-------|:-----------
-`message`      | String | This value represents a human-readable error message.
 `result`       | Number | This value represents an error code defined by the Plug-In. The value is an integer grater than 0. The meaning of the code depends on the Plug-In.
+`statusCode`   | Number | The HTTP status code. Though this value should be grater than or equal to `400`. It depends on the Plug-In module.
+`errorText`    | String | This value represents an HTTP status message. For example, if the value of the `errorCode` property is 403, this value is "Forbidden".
 `serviceId`    | String | This value represents the service ID of the Plug-In.
 `profile`      | String | This value represents the profile name of the service.
 `attribute`    | String | This value represents the attribute name of the profile.
-`errorCode`    | Number | This value represents an HTTP status code, which is an integer grater than or equal to 400.
-`errorText`    | String | This value represents an HTTP status message. For example, if the value of the `errorCode` property is 403, this value is "Forbidden".
-`errorMessage` | String | This value is an error message reported by the Plug-In.
+`errorCode`    | String | This value represents a Plug-In custom error code.
+`errorMessage` | String | This value represents a human-readable error message reported by a Plug-In.
 `product`      | String | The name of the implementation of the GotAPI Server (i.e., the `node-gotapi`). The `node-gotapi` assigns "`node-gotapi`" to this property.
 `version`      | String | The version of the implementation of the GotAPI Server (i.e., the `node-gotapi`).
+
+If the node-gotapi cathes an error before a request is passed to a Plug-In module, it returns an error with the property-set as follows:
+
+`result` | `errorCode` | `statusCode` | Prefix of `errorMessage` | Descripition
+:--------|:------------|:-------------|:-------------------------|:------------
+`1`      |`"1"`        |`500`         | `[ERROR]`                | Other than errors described below.
+`2`      |`"2"`        |`404`         | `[INVALID_PROFILE]`      | No profile in the request URL.
+`3`      |`"3"`        |`405`         | `[INVALID_METHOD]`       | A request with a invalid HTTP method (i.e., other than `get`, `post`, `put`, `delete`).
+`4`      |`"4"`        |`404`         | `[INVALID_ATTRIBUTE]`    | An invalid attribute in the request URL.
+`5`      |`"5"`        |`400`         | `[INVALID_SERVICE_ID]`   | No `serviceId` or an invalid `serviceId` in the request URL.
+`6`      |`"6"`        |`404`         | `[UNKNOWN_SERVICE]`      | No service corresponding to the `serviceId` in the request URL.
+`7`      |`"7"`        |`408`         | `[TIMEOUT]`              | No response from the targeted Plug-In within 60 seconds.
+`10`     |`"10"`       |`400`         | `[INVALID_PARAMETER]`    | Failed to parse parameters in the query string in the request URL or the form data in the rquest body.
+`11`     |`"11"`       |`403`         | `[NOT_AUTHORIZED]`       | The front-end application was not authorized in the authrization process.
+`13`     |`"13"`       |`403`         | `[INVALID_TOKEN]`        | No `accessToken` or an invalid `accessToken` in the request URL.
+`14`     |`"14"`       |`403`         | `[OUT_OF_SCOPE]`         | The requested profile is not in the scope defined by the targeted Plug-In.
+`15`     |`"15"`       |`401`         | `[INVALID_CLIENT_ID]`    | An invalid `clientId` was requested in the authentication process for the front-end application.
+`18`     |`"18"`       |`403`         | `[INVALID_ORIGIN]`       | The origin of the front-end application was denied by the node-gotapi.
+`19`     |`"19"`       |`400`         | `[INVALID_URL]`          | The path of the request URL does not start with `/gotapi`.
+
+For example, if a request is invalid (a required parameter not specified):
+
+```
+GET /gotapi/availability
+```
+
+Then the result will be as follow:
+
+```JavaScript
+400 Bad Request
+
+{
+  "profile": "availability",
+  "attribute": "",
+  "result": 10,
+  "errorCode": "10",
+  "errorMessage": "[INVALID_PARAMETER] The parameter `key` is required.",
+  "statusCode": 400,
+  "product": "node-gotapi",
+  "version": "0.3.0",
+  "errorText": "Bad Request"
+}
+```
 
 ### <a name="onmessage-property">`onmessage` property</a>
 
@@ -1259,11 +1311,9 @@ GET /gotapi/availability?key=ce517c7a15b7073142b737f3733128f4e667c0893c9d8717f3c
   "profile": "availability",
   "attribute": "",
   "product": "node-gotapi",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "result": 0,
-  "errorCode": 0,
-  "errorMessage": "",
-  "errorText": ""
+  "statusCode": 200
 }
 ```
 
