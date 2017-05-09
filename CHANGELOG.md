@@ -3,6 +3,10 @@ node-gotapi Changelog
 
 ## Version 0.3
 
+### 0.3.1 (2017-05-10)
+
+- Fixed the `errorCode` bug. If a Plug-In set a value to the `errorCode` property for a response, the process of the Plug-In died. Now the node-gotapi accepts an `errorCode` property as expected.
+
 ### 0.3.0 (2017-04-22)
 
 - Changed the type of the `errorCode` property in the `Error` object from `Number` to `String` to be compliant to the OMA GotAPI 1.1 specification.
