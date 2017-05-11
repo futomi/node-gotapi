@@ -3,6 +3,10 @@ node-gotapi Changelog
 
 ## Version 0.3
 
+### 0.3.2 (2017-05-11)
+
+- Allowed `serviceDiscovery` as the profile name of the service discovery. Now, both of `servicediscovery` and `serviceDiscovery` can be used for the profile name of the service discovery on the GotAPI-1 Interface. Basically, you do not have to care about this update because the `gotapi-client.js` (the helper JS library for front-end applications) handles the service discvoery request instead of you.
+
 ### 0.3.1 (2017-05-10)
 
 - Fixed the `errorCode` bug. If a Plug-In set a value to the `errorCode` property for a response, the process of the Plug-In died. Now the node-gotapi accepts an `errorCode` property as expected.
