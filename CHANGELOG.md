@@ -3,6 +3,10 @@ node-gotapi Changelog
 
 ## Version 0.3
 
+### 0.3.3 (2017-07-18)
+
+- Allowed `serviceinformation` as the profile name of the service information API even if Plug-Ins return `serviceInformation` in the scopes. The GotAPI Server checks if the profile name in a request exists in the scopes reported by the targeted Plug-In. Basically, the profile name in the scopes is case-sensitive. However, `serviceinformation` is not case-sensitive now. Requests whose profile name is `serviceinformation` or `serviceInformation` will be passed to the targeted Plug-In if the Plug-In has one of the two in the scopes. If your Plug-In does not support the service information API, you do not need to care about this change.
+
 ### 0.3.2 (2017-05-11)
 
 - Allowed `serviceDiscovery` as the profile name of the service discovery. Now, both of `servicediscovery` and `serviceDiscovery` can be used for the profile name of the service discovery on the GotAPI-1 Interface. Basically, you do not have to care about this update because the `gotapi-client.js` (the helper JS library for front-end applications) handles the service discvoery request instead of you.
