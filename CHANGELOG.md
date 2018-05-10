@@ -3,6 +3,10 @@ node-gotapi Changelog
 
 ## Version 0.3
 
+### 0.3.4 (2018-05-10)
+
+- Fixed the bug that an error occurred when the GotAPI-1 Interface was accessed by an user agent other than web browser (such as crul).
+
 ### 0.3.3 (2017-07-18)
 
 - Allowed `serviceinformation` as the profile name of the service information API even if Plug-Ins return `serviceInformation` in the scopes. The GotAPI Server checks if the profile name in a request exists in the scopes reported by the targeted Plug-In. Basically, the profile name in the scopes is case-sensitive. However, `serviceinformation` is not case-sensitive now. Requests whose profile name is `serviceinformation` or `serviceInformation` will be passed to the targeted Plug-In if the Plug-In has one of the two in the scopes. If your Plug-In does not support the service information API, you do not need to care about this change.
