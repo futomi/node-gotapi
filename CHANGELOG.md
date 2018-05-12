@@ -3,6 +3,10 @@ node-gotapi Changelog
 
 ## Version 0.3
 
+### 0.3.5 (2018-05-12)
+
+- Fixed the bug that an error occurred when the GotAPI-1 Interface was accessed by an user agent other than web browser (such as crul).
+
 ### 0.3.4 (2018-05-10)
 
 - Fixed the bug that an error occurred when the GotAPI-1 Interface was accessed by an user agent other than web browser (such as crul).
