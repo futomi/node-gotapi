@@ -2,9 +2,9 @@
 /* ------------------------------------------------------------------
 * node-gotapi - index.js
 *
-* Copyright (c) 2017, Futomi Hatano, All rights reserved.
+* Copyright (c) 2017-2018, Futomi Hatano, All rights reserved.
 * Released under the MIT license
-* Date: 2017-03-04
+* Date: 2018-11-17
 * ---------------------------------------------------------------- */
 'use strict';
 process.chdir(__dirname);
@@ -131,6 +131,8 @@ if(config['ssl_engine'] === true) {
 			});
 		}
 	}
+} else {
+	startServer();
 }
 
 function startServer() {

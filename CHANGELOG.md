@@ -3,6 +3,10 @@ node-gotapi Changelog
 
 ## Version 0.3
 
+### 0.3.7 (2018-11-17)
+
+- Fixed the bug that the gotapi server dies if the `ssl_engine` in the `config.js` is set to `false`.
+
 ### 0.3.6 (2018-05-13)
 
 - Supported binary files as web app contents. Now, the web server for web apps can serve image files.

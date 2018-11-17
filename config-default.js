@@ -100,7 +100,7 @@ module.exports = {
 	* - SSL Engine Operation Switch
 	*     true: on, false: off
 	* ------------------------------------------------------------ */
-	ssl_engine: true,
+	"ssl_engine": true,
 
 	/* --------------------------------------------------------------
 	* - Port number for the https server for web applications
