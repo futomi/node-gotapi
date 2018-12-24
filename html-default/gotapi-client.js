@@ -1,9 +1,9 @@
 /* ------------------------------------------------------------------
 * node-gotapi - gotapi-client.js
 *
-* Copyright (c) 2017, Futomi Hatano, All rights reserved.
+* Copyright (c) 2017-2018, Futomi Hatano, All rights reserved.
 * Released under the MIT license
-* Date: 2017-04-02
+* Date: 2018-12-23
 * ---------------------------------------------------------------- */
 'use strict';
 
@@ -314,7 +314,7 @@ GotapiClient.prototype._establishIf5Connection = function() {
 			//
 		};
 		ws.onerror = (error) => {
-			reject(new Error('Failed to establish a WebSocket connection: ' + error.toString()));
+			reject(new Error('Failed to establish a WebSocket connection.'));
 		};
 		ws.onmessage = (res) => {
 			resolve();

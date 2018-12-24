@@ -1,6 +1,13 @@
 node-gotapi Changelog
 ======================
 
+## Version 0.4
+
+### 0.4.0 (2018-12-24)
+
+- Changed the HTTP port number for web apps from 10880 to 4035 (same as the GotAPI Interface-1) and changed the HTTPS port number for web apps from 10443 to 4036 (same as the GotAPI Interface-1).
+- Supported IPv6 experimentally. Now you can access to the web app and GotAPI Interface-1 using IPv6 address. (e.g., `https://[2000:312:f32e:2a00:2a00:1bf7:1234:5678]:4036/`)
+
 ## Version 0.3
 
 ### 0.3.7 (2018-11-17)

@@ -12,7 +12,9 @@ module.exports = {
 	*     here.
 	*
 	*     [Example]
-	*      "allowed_address_list": ['192.168.10.0/24']
+	*      "allowed_address_list": ['192.168.10.0/24', '2408:212:2e2e:2a00']
+	*
+	*     Note: IPv6 addresses are evaluated just by forward matching for now.
 	* ------------------------------------------------------------ */
 	"allowed_address_list": [],
 
@@ -26,7 +28,7 @@ module.exports = {
 	*     servers, define the origins here.
 	*
 	*     [Example]
-	*       "allowed_origin_list": ["https://192.168.10.3:10443"],
+	*       "allowed_origin_list": ["https://192.168.0.13:4036"],
 	* ------------------------------------------------------------ */
 	"allowed_origin_list": [],
 
@@ -37,7 +39,7 @@ module.exports = {
 	/* --------------------------------------------------------------
 	* - Port number for the http server for web applications
 	* ------------------------------------------------------------ */
-	"http_server_port": 10880,
+	"http_server_port": 4035,
 
 	/* --------------------------------------------------------------
 	* - The path of the document root for web applications.
@@ -105,7 +107,7 @@ module.exports = {
 	/* --------------------------------------------------------------
 	* - Port number for the https server for web applications
 	* ------------------------------------------------------------ */
-	"https_server_port": 10443,
+	"https_server_port": 4036,
 
 	/* --------------------------------------------------------------
 	* - The port number for the GotAPI-1/5 Interface for SSL
