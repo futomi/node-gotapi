@@ -3,6 +3,11 @@ node-gotapi Changelog
 
 ## Version 0.4
 
+### 0.4.1 (2018-12-24)
+
+- Fixed the bug that the handling of the Plug-In response timeout did not work well.
+- Changed the HTTP response code for timeout from `408 Request Timeout` to `500 Internal Server Error`. This is a workaround for Chrome. If Chrome receives `408 Request Timeout`, it retries the request troublingly.
+
 ### 0.4.0 (2018-12-24)
 
 - Changed the HTTP port number for web apps from 10880 to 4035 (same as the GotAPI Interface-1) and changed the HTTPS port number for web apps from 10443 to 4036 (same as the GotAPI Interface-1).

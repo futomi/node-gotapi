@@ -83,6 +83,7 @@ module.exports = {
 	* - The timeout for Plug-Ins
 	*     This is the period which the GotAPI Server waits for the
 	*     response from the Plug-In. The unit is second.
+	*     The value must be equal to or less than 60 (seconds).
 	* ------------------------------------------------------------ */
 	"plugin_response_timeout": 60,
 

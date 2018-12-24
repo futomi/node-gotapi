@@ -38,7 +38,7 @@
 	"TIMEOUT": {
 		"result": 7,
 		"errorCode": "7",
-		"statusCode": 408,
+		"statusCode": 500,
 		"errorName": "TIMEOUT"
 	},
 	"INVALID_PARAMETER": {
