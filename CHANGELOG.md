@@ -3,6 +3,13 @@ node-gotapi Changelog
 
 ## Version 0.4
 
+### 0.4.2 (2019-10-19)
+
+- Refactored the following scripts:
+  - `gotapi-server.js`
+  - `gotapi-interface-1.js`
+  - `gotapi-interface-4.js`
+
 ### 0.4.1 (2018-12-24)
 
 - Fixed the bug that the handling of the Plug-In response timeout did not work well.
