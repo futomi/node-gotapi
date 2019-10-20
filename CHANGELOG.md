@@ -3,6 +3,10 @@ node-gotapi Changelog
 
 ## Version 0.4
 
+### 0.4.3 (2019-10-21)
+
+- Fixed the bug that the service discovery process on a certain condition caused memory leak.
+
 ### 0.4.2 (2019-10-19)
 
 - Refactored the following scripts:
