@@ -977,30 +977,30 @@ In this callback function, the `data` property must be added in the [`RequestMes
 
 This object is passed to the callback function attached to the [`this.util.onmessage`](#onmessage-property) property. This object represents a request message coming from the front-end application. The object consists of the properties as follows:
 
-Property      |             | Type   | Description
+Property      | &nbsp;      | Type   | Description
 :-------------|:------------|:-------|:-----------
-`params`      |             | Object | The parameters which the front-end application sent in the request to the GotAPI-1 message.
-              | `serviceId` | String | The service ID
-              | (any)       | String | If the front-end application sent any other parameters, the parameters are stored in the `params` property.
-`package`     |             | String | The origin of the front-end application (e.g. "https://localhost:10443")
-`profile`     |             | String | The profile name
-`attribute`   |             | String | The attribute name
-`method`      |             | String | The HTTP method used when the front end application sent the request to the GotAPI-1 Interface. The value is either `get`, `post`, `put`, or `delete`.
-`clientId`    |             | String | The client ID assigned to the front end application.
-`accessToken` |             | String | The access token assigned to the front end application.
-`receiver`    |             | String | The application ID of the `node-gotapi` (e.g. "com.github.futomi.node-gotapi")
+`params`      | &nbsp;      | Object | The parameters which the front-end application sent in the request to the GotAPI-1 message.
+&nbsp;        | `serviceId` | String | The service ID
+&nbsp;        | (any)       | String | If the front-end application sent any other parameters, the parameters are stored in the `params` property.
+`package`     | &nbsp;      | String | The origin of the front-end application (e.g. "https://localhost:10443")
+`profile`     | &nbsp;      | String | The profile name
+`attribute`   | &nbsp;      | String | The attribute name
+`method`      | &nbsp;      | String | The HTTP method used when the front end application sent the request to the GotAPI-1 Interface. The value is either `get`, `post`, `put`, or `delete`.
+`clientId`    | &nbsp;      | String | The client ID assigned to the front end application.
+`accessToken` | &nbsp;      | String | The access token assigned to the front end application.
+`receiver`    | &nbsp;      | String | The application ID of the `node-gotapi` (e.g. "com.github.futomi.node-gotapi")
 
 ### <a name="returnMessage-method">`this.util.returnMessage()` method</a>
 
-This method returns a response to the front-end application through the GotAPI Server and GotAPI-1 Interface. This method takes an ['RequestMessage`](#RequestMessage-object) object as the 1st argument.
+This method returns a response to the front-end application through the GotAPI Server and GotAPI-1 Interface. This method takes an [`RequestMessage`](#RequestMessage-object) object as the 1st argument.
 
-If the request was accepted successfully, the `result` property must be set to `0` on the ['RequestMessage`](#RequestMessage-object) object, then the object must be passed to this method. 
+If the request was accepted successfully, the `result` property must be set to `0` on the [`RequestMessage`](#RequestMessage-object) object, then the object must be passed to this method. 
 
-You can set any properties to the ['RequestMessage`](#RequestMessage-object) object as the response data except the [prohibited property names for response](#prohibited-property-names-for-response). In the code snippt below, the `data` property is added.
+You can set any properties to the [`RequestMessage`](#RequestMessage-object) object as the response data except the [prohibited property names for response](#prohibited-property-names-for-response). In the code snippt below, the `data` property is added.
 
-If the request failed, the `result` property must be set to an integer grater than 0 on the ['RequestMessage`](#RequestMessage-object) object. You can also add the `errorMessage` property for your custom error message.
+If the request failed, the `result` property must be set to an integer grater than 0 on the [`RequestMessage`](#RequestMessage-object) object. You can also add the `errorMessage` property for your custom error message.
 
-By default, the response is returned to the front-end application with HTTP status code `200` if the request succeeded, or `400` (Bad Request) if the request failed. If you want change the HTTP status code, you can add the `statusCode` property on the ['RequestMessage`](#RequestMessage-object) object. Be sure that the value of the `statusCode` is consistent with the `result` property. If the `result` property is set to `0`, the `statusCode` must be "2xx Success". Otherwise, it must be "4xx Client errors" or "5xx Server error".
+By default, the response is returned to the front-end application with HTTP status code `200` if the request succeeded, or `400` (Bad Request) if the request failed. If you want change the HTTP status code, you can add the `statusCode` property on the [`RequestMessage`](#RequestMessage-object) object. Be sure that the value of the `statusCode` is consistent with the `result` property. If the `result` property is set to `0`, the `statusCode` must be "2xx Success". Otherwise, it must be "4xx Client errors" or "5xx Server error".
 
 ```JavaScript
 GotapiPlugin.prototype.receiveMessage = function(message) {
@@ -1030,7 +1030,7 @@ This method takes an [`RequestMessage`](#RequestMessage-object) object as the 1s
 
 The `data` property must be added to the [`RequestMessage`](#RequestMessage-object) object, then passed it to this method.
 
-When you want to push an error, the `result` property must be added to the ['RequestMessage`](#RequestMessage-object) object, then passed it to this method. You can also add the `errorMessage` property for your custom error message.
+When you want to push an error, the `result` property must be added to the [`RequestMessage`](#RequestMessage-object) object, then passed it to this method. You can also add the `errorMessage` property for your custom error message.
 
 The value of the `result` must be an integer grater than or equal to 400. Basically it is recommended that the value is assigned to an meaningful HTTP status code. If you want to assign it to your custom error code, see the section "[Returning an Error](#Returning-an-Error)" for details.
 
