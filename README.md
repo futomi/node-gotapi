@@ -441,7 +441,7 @@ Property       | Type   | Required | Description
 :--------------|:-------|:---------|:-----------
 `result`       | Number | Required | An integer representing the result of the method. If the method was executed successfully, this value must be 0. Otherwise, the value must be an integer grater than 0.
 `errorMessage` | String | Optional | If the method was failed, you can set a custom error message.
-(any)          | (any)  | You can set any data representing the result. You can use any property name except the [prohibited property names for response](#prohibited-property-names-for-response). In the sample code above, the `data` property is set for the response.
+(any)          | (any)  | Optional | You can set any data representing the result. You can use any property name except the [prohibited property names for response](#prohibited-property-names-for-response). In the sample code above, the `data` property is set for the response.
 
 You have developed the sample Plug-In now. Let's go to the next step.
 
